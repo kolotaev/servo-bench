@@ -1,9 +1,8 @@
-# Benchmark of differerent web-frameworks for machines with liited resources
+# Benchmark various web-frameworks for machines with limited resources
 
 - [Frameworks](#frameworks)
-	- [Go](#go)
-	- [Python](#python)
-- Run
+  - []
+- [Run](#run)
 
 
 ## Frameworks
