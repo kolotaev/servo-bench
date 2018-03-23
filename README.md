@@ -13,5 +13,5 @@
 ## Run
 
 ```
-./run.sh
+./run.sh -i FRAMEWORK_NAME -d DETACHED_OR_NOT 
 ```
