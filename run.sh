@@ -1,18 +1,30 @@
-while getopts i:d: option do
+PORT="8080"
+DETACHED="yes"
+
+while getopts i:d:p: option
+do
 	case "${option}"
 	in
 	i) IMAGE=${OPTARG};;
 	d) DETACHED=${OPTARG};;
+	p) PORT=${OPTARG};;
 	esac
 done
 
-NAME="${IMAGE}_cont"
-
-CMD = "docker run --name=$NAME --rm "
-if [[ -nz $DETACHED ]] then;
-	CMD = "${CMD} -d "
+if [[ -z $IMAGE ]]
+then
+	echo "Working with image name taken from current working directory"
+	IMAGE=$(basename $(pwd))
 fi
 
-CMD = "${CMD} -d $IMAGE -p 8080:8080"
+NAME="${IMAGE}_container"
+
+CMD="docker run --name=$NAME --rm "
+if [[ $DETACHED == "yes" ]]
+then
+	CMD="${CMD} -d"
+fi
+
+CMD="${CMD} $IMAGE -p $PORT:8080"
 
 eval ${CMD}
