@@ -1,6 +1,6 @@
 IMAGE=$1
 
-if [[ -z $IMAGE ]]
+if [[ -z "$IMAGE" ]]
 then
 	echo "Working with image name taken from current working directory"
 	IMAGE=$(basename $(pwd))

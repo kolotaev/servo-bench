@@ -11,7 +11,7 @@ do
 	esac
 done
 
-if [[ -z $IMAGE ]]
+if [[ -z "$IMAGE" ]]
 then
 	echo "Working with image name taken from current working directory"
 	IMAGE=$(basename $(pwd))
@@ -22,9 +22,9 @@ NAME="${IMAGE}_container"
 CMD="docker run --name=$NAME --rm "
 if [[ $DETACHED == "yes" ]]
 then
-	CMD="${CMD} -d"
+	CMD="${CMD} -d "
 fi
 
-CMD="${CMD} $IMAGE -p $PORT:8080"
+CMD="${CMD} -p ${PORT}:8080 $IMAGE"
 
 eval ${CMD}
