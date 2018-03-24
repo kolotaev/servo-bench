@@ -12,14 +12,19 @@
 
 ## Frameworks
 
+Every framework section has 2 words: Language. Framework name.
+
 ### Go. Echo.
 
 [Page](https://github.com/labstack/echo)
 
-%CPU %MEM
-94.9  2.4
 
-mem 361556 used ut of 352000
+*JSON*
+
+> %CPU %MEM
+> 94.9  2.4
+> running: 361mb used
+> before launch: 350mb used
 
 ```
 wrk -t12 -c400 -d300s http://lamp:8080/json
@@ -45,7 +50,7 @@ cd WEB_FRAMEWORK_FOLDER
 ## Run image
 
 ```bash
-./run.sh -i FRAMEWORK_NAME -d DETACHED_OR_NOT(yes/no) -p PORT
+./run.sh -i FRAMEWORK_NAME -a (DETACHED_OR_NOT) -p PORT
 
 or
 

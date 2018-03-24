@@ -36,5 +36,5 @@ func main() {
 		}
 		return c.JSON(http.StatusOK, user)
 	})
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Start(":8080")
 }

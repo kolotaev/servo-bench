@@ -1,12 +1,12 @@
 PORT="8080"
-DETACHED="yes"
+ATTACHED=false
 
-while getopts i:d:p: option
+while getopts i:a:p: option
 do
 	case "${option}"
 	in
 	i) IMAGE=${OPTARG};;
-	d) DETACHED=${OPTARG};;
+	a) ATTACHED=true;;
 	p) PORT=${OPTARG};;
 	esac
 done
@@ -20,7 +20,7 @@ fi
 NAME="${IMAGE}_container"
 
 CMD="docker run --name=$NAME --rm "
-if [[ $DETACHED == "yes" ]]
+if [[ ! $ATTACHED ]]
 then
 	CMD="${CMD} -d "
 fi
