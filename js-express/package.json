@@ -1,0 +1,13 @@
+{
+  "name": "server-app",
+  "version": "1.0.0",
+  "description": "Node.js test app",
+  "author": "Egor Kolotaev",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.16.1"
+  }
+}
