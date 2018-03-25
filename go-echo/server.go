@@ -22,7 +22,7 @@ func randomString(l int) string {
 }
 
 func randInt(min int, max int) int {
-    return min + rand.Intn(max-min)
+    return min + rand.Intn(max - min)
 }
 
 func main() {

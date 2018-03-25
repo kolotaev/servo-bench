@@ -1,7 +1,7 @@
 PORT="8080"
 ATTACHED=false
 
-while getopts i:a:p: option
+while getopts i:ap: option
 do
 	case "${option}"
 	in
@@ -20,7 +20,7 @@ fi
 NAME="${IMAGE}_container"
 
 CMD="docker run --name=$NAME --rm "
-if [[ ! $ATTACHED ]]
+if [[ "$ATTACHED" = false ]];
 then
 	CMD="${CMD} -d "
 fi

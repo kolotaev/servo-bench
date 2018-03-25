@@ -16,5 +16,5 @@ Vagrant.configure("2") do |config|
 
   config.vm.synced_folder ".", "/shared"
 
-  config.vm.provision "shell", path: "provision.sh"
+  config.vm.provision "shell", path: "provision.sh", privileged: true
 end

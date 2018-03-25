@@ -19,6 +19,9 @@ Every framework section has 2 words: Language. Framework name.
 [Page](https://github.com/labstack/echo)
 
 
+Logging enabled? - false
+
+
 *JSON*
 
 > %CPU %MEM
