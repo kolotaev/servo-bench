@@ -4,37 +4,130 @@ import (
 	"net/http"
 	"math/rand"
 	"time"
+	"os"
+	"strconv"
+	"database/sql"
+	"log"
+	"fmt"
 
 	"github.com/labstack/echo"
+	_ "github.com/lib/pq"
 )
 
+const SLEEP_MAX_DEFAULT = 2 // seconds
+const LOOP_COUNT_DEFAULT = 1000
+
 type User struct {
-  Name  string `json:"name""`
-  ID string `json:"id""`
+	ID string `json:"id"`
+	Name  string `json:"name"`
+	Surname string `json:"surname"`
+	Street string `json:"street"`
+	School string `json:"school"`
+	Bank string `json:"bank"`
+	A int `json:"a"`
+	B float64 `json:"b"`
+	C int `json:"c"`
+	Friend *User `json:"friend"`
 }
 
 func randomString(l int) string {
-    bytes := make([]byte, l)
-    for i := 0; i < l; i++ {
-        bytes[i] = byte(randInt(65, 90))
-    }
-    return string(bytes)
+	randomInt := func(min int, max int) int {
+		return min + rand.Intn(max - min)
+	}
+	bytes := make([]byte, l)
+	for i := 0; i < l; i++ {
+		bytes[i] = byte(randomInt(65, 90))
+	}
+	return string(bytes)
 }
 
-func randInt(min int, max int) int {
-    return min + rand.Intn(max - min)
+func createUser() *User {
+	friend := &User{
+		ID: randomString(34),
+			Name:  "my-friend",
+			Surname: randomString(3),
+			Street: randomString(15),
+			School: randomString(9),
+			Bank: randomString(4),
+			A: rand.Intn(100),
+			B: rand.Float64(),
+			C: rand.Intn(1090),
+			Friend: nil,
+	}
+	return &User{
+		ID: randomString(34),
+			Name:  randomString(10),
+			Surname: randomString(3),
+			Street: randomString(15),
+			School: randomString(9),
+			Bank: randomString(4),
+			A: rand.Intn(100),
+			B: rand.Float64(),
+			C: rand.Intn(1090),
+			Friend: friend,
+	}
+}
+
+func getBenchmarkParams() (int, int) {
+	sleep := SLEEP_MAX_DEFAULT
+	loopCount := LOOP_COUNT_DEFAULT
+
+	i, err := strconv.Atoi(os.Getenv("SQL_SLEEP_MAX"))
+	if err == nil {
+		sleep = i
+	}
+
+	i, err = strconv.Atoi(os.Getenv("LOOP_COUNT"))
+	if err == nil {
+		loopCount = i
+	}
+	return sleep, loopCount
 }
 
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
+	sleep, loopCount := getBenchmarkParams()
+	log.Printf("Using SQL_SLEEP_MAX = %d; LOOP_COUNT = %d\n", sleep, loopCount)
+
+	connStr := "postgres://postgres:root@database/postgres?sslmode=disable"
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err = db.Ping(); err != nil {
+		panic(err)
+	} else {
+		fmt.Println("DB Connected...")
+	}
+
 	e := echo.New()
+	
 	e.GET("/json", func(c echo.Context) error {
-		user := &User{
-			Name: randomString(50),
-			ID: randomString(10),
+		user := createUser()
+		return c.JSON(http.StatusOK, &user)
+	})
+
+	e.GET("/db", func(c echo.Context) error {
+		var users []*User
+		result := make(map[string]interface{})
+
+		// Do a long DB I/O call
+		query := fmt.Sprintf("SELECT pg_sleep(%f)", float32(rand.Intn(sleep * 1000)) / 1000)
+		_, err := db.Query(query)
+		if err != nil {
+			log.Fatal(err)
 		}
-		return c.JSON(http.StatusOK, user)
+		result["db-query"] = query
+
+		// Create some CPU and RAM load
+		for i := 0; i < loopCount; i++ {
+			user := createUser()
+			users = append(users, user)
+		}
+		result["data"] = users
+
+		return c.JSON(http.StatusOK, result)
 	})
 	e.Start(":8080")
 }
