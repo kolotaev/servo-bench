@@ -46,6 +46,22 @@ Requests/sec:   8653.99
 Transfer/sec:      1.67MB
 ```
 
+DB
+?
+
+```
+wrk -t12 -c400 -d300s http://lamp:8080/db
+Running 5m test @ http://lamp:8080/db
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.65s   306.46ms   2.00s    76.23%
+    Req/Sec     8.52      6.74    60.00     76.87%
+  21299 requests in 5.00m, 7.59GB read
+  Socket errors: connect 156, read 0, write 0, timeout 18758
+Requests/sec:     70.98
+Transfer/sec:     25.89MB
+```
+
 
 ### JS. Express.
 

@@ -1,6 +1,6 @@
 # Nodejs express framework
 
-FROM node:carbon
+FROM node:alpine
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -11,8 +11,6 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 RUN npm install
-# building our code for production
-RUN npm install --only=production
 
 # Bundle app source
 COPY . .

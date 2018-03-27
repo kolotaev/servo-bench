@@ -15,7 +15,7 @@ import (
 )
 
 const SLEEP_MAX_DEFAULT = 2 // seconds
-const LOOP_COUNT_DEFAULT = 1000
+const LOOP_COUNT_DEFAULT = 100
 
 type User struct {
 	ID string `json:"id"`
@@ -44,7 +44,7 @@ func randomString(l int) string {
 func createUser() *User {
 	friend := &User{
 		ID: randomString(34),
-			Name:  "my-friend",
+			Name: randomString(10),
 			Surname: randomString(3),
 			Street: randomString(15),
 			School: randomString(9),
@@ -56,7 +56,7 @@ func createUser() *User {
 	}
 	return &User{
 		ID: randomString(34),
-			Name:  randomString(10),
+			Name: randomString(10),
 			Surname: randomString(3),
 			Street: randomString(15),
 			School: randomString(9),
@@ -90,6 +90,7 @@ func main() {
 	sleep, loopCount := getBenchmarkParams()
 	log.Printf("Using SQL_SLEEP_MAX = %d; LOOP_COUNT = %d\n", sleep, loopCount)
 
+	// Connect to DB
 	connStr := "postgres://postgres:root@database/postgres?sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
@@ -98,7 +99,7 @@ func main() {
 	if err = db.Ping(); err != nil {
 		panic(err)
 	} else {
-		fmt.Println("DB Connected...")
+		log.Println("DB Connected...")
 	}
 
 	e := echo.New()
@@ -113,12 +114,13 @@ func main() {
 		result := make(map[string]interface{})
 
 		// Do a long DB I/O call
-		query := fmt.Sprintf("SELECT pg_sleep(%f)", float32(rand.Intn(sleep * 1000)) / 1000)
-		_, err := db.Query(query)
+		queryString := fmt.Sprintf("SELECT pg_sleep(%f)", float32(rand.Intn(sleep * 1000)) / 1000)
+		rows, err := db.Query(queryString)
+		defer rows.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
-		result["db-query"] = query
+		result["db-query"] = queryString
 
 		// Create some CPU and RAM load
 		for i := 0; i < loopCount; i++ {
