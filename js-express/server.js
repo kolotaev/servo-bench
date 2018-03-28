@@ -1,9 +1,14 @@
 'use strict';
 
 const express = require('express');
+const { Pool } = require('pg')
 
 const PORT = 8080;
 const HOST = '0.0.0.0';
+
+
+const sqlMaxSleep = parseInt(process.env.SQL_SLEEP_MAX) || 2 // seconds
+const loopCount = parseInt(process.env.LOOP_COUNT) || 100
 
 
 function randomString(len) {
@@ -47,9 +52,41 @@ function createUser() {
 // App
 const app = express();
 
+// DB
+const dbPool = new Pool({
+  user: 'postgres',
+  host: 'database_host',
+  database: 'postgres',
+  password: 'root',
+  port: 5432,
+})
+
+// Routes
 app.get('/json', (req, res) => {
     var user = createUser();
     res.json(user);
+});
+
+app.get('/db', (req, res) => {
+    pool.query('SELECT pg_sleep($1)', [1], (err, res) => {
+        if (err) {
+            throw err;
+        }
+        pool.end();
+    });
+
+    // Create some CPU and RAM load
+    var users = [];
+    for (var i = 0; i < loopCount; i++) {
+        users[i] = createUser();
+    }
+
+    var result = {
+        "db-query": "",
+        "data": users,
+    }
+
+    res.json(result);
 });
 
 app.listen(PORT, HOST);

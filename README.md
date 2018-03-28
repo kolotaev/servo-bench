@@ -1,4 +1,4 @@
-# Benchmark various web-frameworks
+# Benchmark of various web-frameworks
 
 > Tests for machines with limited resources (1 vCPU, 512 Mb RAM).
 
@@ -17,7 +17,7 @@ Every framework section has 2 words: Language. Framework name.
 
 ### Go. Echo.
 
-[Page](https://github.com/labstack/echo)
+- [Page](https://github.com/labstack/echo)
 
 
 Logging enabled? - false
@@ -65,8 +65,8 @@ Transfer/sec:     25.89MB
 
 ### JS. Express.
 
-[NodeJS page](nodejs.org/)
-[Express Page](https://expressjs.com)
+- [NodeJS page](nodejs.org/)
+- [Express Page](https://expressjs.com)
 
 
 ## Build image

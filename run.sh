@@ -27,6 +27,6 @@ then
 	CMD="${CMD} -d "
 fi
 
-CMD="${CMD} -p ${PORT}:8080 -e SQL_SLEEP_MAX=${SQL_SLEEP_MAX} -e LOOP_COUNT=${LOOP_COUNT} --add-host=database:192.168.33.33 $IMAGE"
+CMD="${CMD} -p ${PORT}:8080 -e SQL_SLEEP_MAX=${SQL_SLEEP_MAX} -e LOOP_COUNT=${LOOP_COUNT} --add-host=database_host:192.168.33.33 $IMAGE"
 
 eval ${CMD}
