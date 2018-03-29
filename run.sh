@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 PORT="8080"
 ATTACHED=false
 

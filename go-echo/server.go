@@ -14,8 +14,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const SLEEP_MAX_DEFAULT = 2 // seconds
-const LOOP_COUNT_DEFAULT = 100
+const SLEEP_MAX_DEFAULT = 0 // seconds
+const LOOP_COUNT_DEFAULT = 0
 
 type User struct {
 	ID string `json:"id"`
@@ -114,7 +114,8 @@ func main() {
 		result := make(map[string]interface{})
 
 		// Do a long DB I/O call
-		queryString := fmt.Sprintf("SELECT pg_sleep(%f)", float32(rand.Intn(sleep * 1000)) / 1000)
+		sleepRand := float32(rand.Intn(sleep * 1000)) / 1000
+		queryString := fmt.Sprintf("SELECT pg_sleep(%f)", sleepRand)
 		rows, err := db.Query(queryString)
 		defer rows.Close()
 		if err != nil {

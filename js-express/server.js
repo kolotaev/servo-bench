@@ -7,8 +7,8 @@ const PORT = 8080;
 const HOST = '0.0.0.0';
 
 
-const sqlMaxSleep = parseInt(process.env.SQL_SLEEP_MAX) || 2 // seconds
-const loopCount = parseInt(process.env.LOOP_COUNT) || 100
+const sqlMaxSleep = parseInt(process.env.SQL_SLEEP_MAX) || 0 // seconds
+const loopCount = parseInt(process.env.LOOP_COUNT) || 0
 
 
 function randomString(len) {
@@ -68,7 +68,9 @@ app.get('/json', (req, res) => {
 });
 
 app.get('/db', (req, res) => {
-    pool.query('SELECT pg_sleep($1)', [1], (err, res) => {
+    var randSleep = Math.random() * sqlMaxSleep;
+    var qry = `SELECT pg_sleep(randSleep)`
+    pool.query(qry, (err, res) => {
         if (err) {
             throw err;
         }
@@ -82,7 +84,7 @@ app.get('/db', (req, res) => {
     }
 
     var result = {
-        "db-query": "",
+        "db-query": qry,
         "data": users,
     }
 
@@ -90,4 +92,5 @@ app.get('/db', (req, res) => {
 });
 
 app.listen(PORT, HOST);
+console.log(`Using SQL_SLEEP_MAX = ${sqlMaxSleep}; LOOP_COUNT = loopCount`);
 console.log(`Running on http://${HOST}:${PORT}`);
