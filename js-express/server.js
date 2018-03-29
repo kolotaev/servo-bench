@@ -19,10 +19,6 @@ function randomInt(max) {
     return Math.floor(Math.random() * max) + 1; 
 }
 
-function randomFloat() {
-    return Math.random();
-}
-
 
 function createUser() {
     var friend = {
@@ -32,7 +28,7 @@ function createUser() {
         school: randomString(9),
         bank: randomString(4),
         a: randomInt(100),
-        b: randomFloat(),
+        b: Math.random(),
         c: randomInt(1090),
         friend: null,
     };
@@ -43,7 +39,7 @@ function createUser() {
         school: randomString(9),
         bank: randomString(4),
         a: randomInt(100),
-        b: randomFloat(),
+        b: Math.random(),
         c: randomInt(1090),
         friend: friend,
     };
@@ -62,12 +58,19 @@ const dbPool = new Pool({
 })
 
 // Routes
+app.get('/', (req, res) => {
+    res.write("It's me, Express App. Use routes: '/json' or '/db'\n");
+    res.write('hhj\n');
+    res.end();
+});
+
 app.get('/json', (req, res) => {
     var user = createUser();
     res.json(user);
 });
 
 app.get('/db', (req, res) => {
+    // Make a DB call
     var randSleep = Math.random() * sqlMaxSleep;
     var qry = `SELECT pg_sleep(randSleep)`
     pool.query(qry, (err, res) => {
@@ -92,5 +95,5 @@ app.get('/db', (req, res) => {
 });
 
 app.listen(PORT, HOST);
-console.log(`Using SQL_SLEEP_MAX = ${sqlMaxSleep}; LOOP_COUNT = loopCount`);
+console.log(`Using SQL_SLEEP_MAX = ${sqlMaxSleep} seconds; LOOP_COUNT = ${loopCount}`);
 console.log(`Running on http://${HOST}:${PORT}`);

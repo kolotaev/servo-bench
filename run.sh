@@ -2,8 +2,11 @@
 
 PORT="8080"
 ATTACHED=false
+SQL_SLEEP_MAX=2 # seconds
+LOOP_COUNT=100
+RERUN=false
 
-while getopts i:ap:l:s: option
+while getopts i:arp:l:s: option
 do
 	case "${option}"
 	in
@@ -12,6 +15,7 @@ do
 	p) PORT=${OPTARG};;
 	l) LOOP_COUNT=${OPTARG};;
 	s) SQL_SLEEP_MAX=${OPTARG};;
+	r) RERUN=true;;
 	esac
 done
 
@@ -23,6 +27,18 @@ fi
 
 NAME="${IMAGE}_container"
 
+
+# todo - use kill/build script
+if [[ "$RERUN" = true ]];
+then
+    echo "Building image..."
+    docker build -t ${IMAGE} .
+    echo "Killing existing container..."
+    docker rm -f "${IMAGE}_container"
+fi
+
+
+echo "Launching container..."
 CMD="docker run --name=$NAME --rm "
 if [[ "$ATTACHED" = false ]];
 then
