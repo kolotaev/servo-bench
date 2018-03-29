@@ -49,7 +49,7 @@ function createUser() {
 const app = express();
 
 // DB
-const dbPool = new Pool({
+const pool = new Pool({
   user: 'postgres',
   host: 'database_host',
   database: 'postgres',
@@ -59,8 +59,9 @@ const dbPool = new Pool({
 
 // Routes
 app.get('/', (req, res) => {
-    res.write("It's me, Express App. Use routes: '/json' or '/db'\n");
-    res.write('hhj\n');
+    res.write("<html>It's me, Express App.<br/>");
+    res.write("Use routes:<br/><a href='./json'>json</a><br/>");
+    res.write("<a href='./db'>db</a></html>");
     res.end();
 });
 
@@ -72,26 +73,27 @@ app.get('/json', (req, res) => {
 app.get('/db', (req, res) => {
     // Make a DB call
     var randSleep = Math.random() * sqlMaxSleep;
-    var qry = `SELECT pg_sleep(randSleep)`
-    pool.query(qry, (err, res) => {
+    var qry = `SELECT pg_sleep(${randSleep})`
+    pool.query(qry, (err, result) => {
         if (err) {
-            throw err;
+            console.warn(err);
         }
-        pool.end();
+
+//        pool.end();
+
+        // Create some CPU and RAM load
+        var users = [];
+        for (var i = 0; i < loopCount; i++) {
+            users[i] = createUser();
+        }
+
+        var resultData = {
+            "db-query": qry,
+            "data": users,
+        }
+
+        res.json(resultData);
     });
-
-    // Create some CPU and RAM load
-    var users = [];
-    for (var i = 0; i < loopCount; i++) {
-        users[i] = createUser();
-    }
-
-    var result = {
-        "db-query": qry,
-        "data": users,
-    }
-
-    res.json(result);
 });
 
 app.listen(PORT, HOST);
