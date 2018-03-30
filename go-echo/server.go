@@ -91,7 +91,7 @@ func main() {
 	log.Printf("Using SQL_SLEEP_MAX = %d seconds; LOOP_COUNT = %d\n", sleep, loopCount)
 
 	// Connect to DB
-	connStr := "postgres://postgres:root@database_host/postgres?sslmode=disable"
+	connStr := "postgres://postgres:root@127.0.0.1/postgres?sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)

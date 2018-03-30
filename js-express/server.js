@@ -51,7 +51,7 @@ const app = express();
 // DB
 const pool = new Pool({
   user: 'postgres',
-  host: 'database_host',
+  host: '127.0.0.1',
   database: 'postgres',
   password: 'root',
   port: 5432,

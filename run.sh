@@ -60,7 +60,7 @@ function launch_container() {
 
         CMD="${CMD} -p ${PORT}:8080"
         CMD="${CMD} -e SQL_SLEEP_MAX=${SQL_SLEEP_MAX} -e LOOP_COUNT=${LOOP_COUNT}"
-        CMD="${CMD} --add-host=database_host:192.168.33.33 $IMAGE"
+        CMD="${CMD} --net=host $IMAGE"
 
         echo "Launching container..."
         eval ${CMD}
