@@ -21,7 +21,7 @@ function main() {
 function define_image() {
     if [[ -z "$IMAGE" ]]
     then
-        echo "Working with image name taken from current working directory"
+        echo "++ Working with image name taken from current working directory"
         IMAGE=$(basename $(pwd))
     fi
 
@@ -31,25 +31,25 @@ function define_image() {
 function build_image() {
     if [[ "$DO_BUILD" = true ]];
     then
-        echo "Building image..."
+        echo "++ Building image..."
         docker build -t ${IMAGE} .
     else
-        echo "Skip building of image..."
+        echo "-- Skip building of image..."
     fi
 }
 
 function kill_previous_container() {
     if [[ "$DO_KILL" = true ]];
     then
-        echo "Killing existing container..."
+        echo "++ Killing existing container..."
         docker rm -f "${IMAGE}_container"
     else
-        echo "Skip killing of previously run container..."
+        echo "-- Skip killing of previously run container..."
     fi
 }
 
 function launch_container() {
-    if [[ "$DO_BUILD" = true ]];
+    if [[ "$DO_RUN" = true ]];
     then
         CMD="docker run --name=$NAME --rm "
 
@@ -62,10 +62,10 @@ function launch_container() {
         CMD="${CMD} -e SQL_SLEEP_MAX=${SQL_SLEEP_MAX} -e LOOP_COUNT=${LOOP_COUNT}"
         CMD="${CMD} --net=host $IMAGE"
 
-        echo "Launching container..."
+        echo "++ Launching container..."
         eval ${CMD}
     else
-        echo "Skip running container..."
+        echo "-- Skip running container..."
     fi
 }
 
@@ -74,7 +74,7 @@ cat << EOF
 -------------------------------------------
 This script runs docker container for specific framework.
 OPTIONS:
-   -i      Image name of the framework service (if not specified, defaults to the current directory)
+   -d      Directory name of the framework service (if not specified, defaults to the current directory)
    -r      Run container? (default: false)
    -b      Build image? (default: false)
    -k      Kill the previously run container? (default: false)
@@ -89,11 +89,11 @@ EOF
 
 
 # Running Main!
-while getopts i:p:l:s:ahkbr option
+while getopts d:p:l:s:ahkbr option
 do
     case "${option}"
     in
-    i) IMAGE=${OPTARG};;
+    d) IMAGE=${OPTARG};;
     r) DO_RUN=true;;
     k) DO_KILL=true;;
     b) DO_BUILD=true;;

@@ -5,9 +5,7 @@
 - [Frameworks](#frameworks)
   - [Go. Echo.](#go-echo)
   - [JS. Express.](#js-express)
-- [Build image](#build-image)
-- [Run image](#run-image)
-- [Kill image](#kill-image)
+- [Mule script](#mule-scrip)
 - [Results](#results)
 
 
@@ -69,33 +67,56 @@ Transfer/sec:     25.89MB
 - [Express Page](https://expressjs.com)
 
 
-## Build image
+## Mule script
+
+We have a script to help you build and run apps built with this or that framework as docker-containers.
+
+Script can be run by 2 possible ways:
 
 ```bash
-cd WEB_FRAMEWORK_FOLDER
-../build.sh
+# 1. From repo's root directory: you need to specify directory of the framework in -d option
+./mule.sh -d go-echo
+
+# 2. From specific framework's directory: no -d option is needed.
+cd go-echo
+../mule.sh
 ```
 
-## Run image
+Available actions of using `mule` (assuming the 2nd way of running):
 
+- See help for `mule` script
 ```bash
-./run.sh -i FRAMEWORK_NAME -a (DETACHED_OR_NOT) -p PORT
-
-or
-
-cd WEB_FRAMEWORK_FOLDER
-../run.sh
+../mule.sh -h
 ```
 
-## Kill image
-
+- Build/rebuild image
 ```bash
-cd WEB_FRAMEWORK_FOLDER
-../kill.sh
+../mule.sh -b
+```
 
-or
+- Run container
+```bash
+../mule.sh -r
+```
 
-./kill.sh WEB_FRAMEWORK_FOLDER
+- Run container with attached TTY (to see its output)
+```bash
+../mule.sh -ra
+```
+
+- Kill running container
+```bash
+../mule.sh -k
+```
+
+- Build image, kill container if running, run new w/ attached TTY
+```bash
+../mule.sh -brak
+```
+
+- Run with specific options (port, loop-count, etc.)
+```bash
+../mule.sh -ra -p 8088 -l 1000
 ```
 
 
