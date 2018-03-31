@@ -69,12 +69,12 @@ Transfer/sec:     25.89MB
 
 ## Mule script
 
-We have a script to help you build and run apps built with this or that framework as docker-containers.
+`mule`is a script to help you build and run specific framework in a docker-container.
 
 Script can be run by 2 possible ways:
 
 ```bash
-# 1. From repo's root directory: you need to specify directory of the framework in -d option
+# 1. From repo's root directory: you need to specify directory of the framework in -d option.
 ./mule.sh -d go-echo
 
 # 2. From specific framework's directory: no -d option is needed.
@@ -84,7 +84,7 @@ cd go-echo
 
 Available actions of using `mule` (assuming the 2nd way of running):
 
-- See help for `mule` script
+- Read help for `mule` script
 ```bash
 ../mule.sh -h
 ```

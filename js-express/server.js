@@ -55,6 +55,7 @@ const pool = new Pool({
   database: 'postgres',
   password: 'root',
   port: 5432,
+  max: 250, // number of connection
 })
 
 // Routes
@@ -78,8 +79,6 @@ app.get('/db', (req, res) => {
         if (err) {
             console.warn(err);
         }
-
-//        pool.end();
 
         // Create some CPU and RAM load
         var users = [];
