@@ -5,6 +5,7 @@
 - [Frameworks](#frameworks)
   - [Go. Echo.](#go-echo)
   - [JS. Express.](#js-express)
+  - [Python. Flask.](#python-flask)
 - [Mule script](#mule-scrip)
 - [Results](#results)
 
@@ -15,7 +16,7 @@ Every framework section has 2 words: Language. Framework name.
 
 ### Go. Echo.
 
-- [Page](https://github.com/labstack/echo)
+- [Site](https://github.com/labstack/echo)
 
 
 Logging enabled? - false
@@ -63,8 +64,13 @@ Transfer/sec:     25.89MB
 
 ### JS. Express.
 
-- [NodeJS page](nodejs.org/)
-- [Express Page](https://expressjs.com)
+- [NodeJS site](nodejs.org)
+- [Express site](https://expressjs.com)
+
+
+### Python. Flask.
+
+- [Site](http://flask.pocoo.org)
 
 
 ## Mule script

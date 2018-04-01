@@ -1,14 +1,14 @@
 'use strict';
 
 const express = require('express');
-const { Pool } = require('pg')
+const { Pool } = require('pg');
 
 const PORT = 8080;
 const HOST = '0.0.0.0';
 
 
-const sqlMaxSleep = parseInt(process.env.SQL_SLEEP_MAX) || 0 // seconds
-const loopCount = parseInt(process.env.LOOP_COUNT) || 0
+const sqlMaxSleep = parseInt(process.env.SQL_SLEEP_MAX) || 0; // seconds
+const loopCount = parseInt(process.env.LOOP_COUNT) || 0;
 
 
 function randomString(len) {
@@ -56,7 +56,7 @@ const pool = new Pool({
   password: 'root',
   port: 5432,
   max: 250, // number of connection
-})
+});
 
 // Routes
 app.get('/', (req, res) => {
@@ -74,7 +74,7 @@ app.get('/json', (req, res) => {
 app.get('/db', (req, res) => {
     // Make a DB call
     var randSleep = Math.random() * sqlMaxSleep;
-    var qry = `SELECT pg_sleep(${randSleep})`
+    var qry = `SELECT pg_sleep(${randSleep})`;
     pool.query(qry, (err, result) => {
         if (err) {
             console.warn(err);
@@ -89,7 +89,7 @@ app.get('/db', (req, res) => {
         var resultData = {
             "db-query": qry,
             "data": users,
-        }
+        };
 
         res.json(resultData);
     });

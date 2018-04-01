@@ -61,3 +61,10 @@ Thumbs.db
 # -------------------------
 
 bin/*
+
+
+# Python
+venv
+*.pyc
+*.py~
+
