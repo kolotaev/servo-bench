@@ -2,7 +2,6 @@ import os
 import sys
 import random
 import string
-import logging
 from contextlib import contextmanager
 
 import psycopg2.pool
@@ -31,6 +30,16 @@ class MyJSONEncoder(JSONEncoder):
         return super().default(obj)
 
 
+@contextmanager
+def get_cursor():
+    global pool
+    con = pool.getconn()
+    try:
+        yield con.cursor()
+    finally:
+        pool.putconn(con)
+
+
 class User:
     def __init__(self, **kwargs):
         self.name = kwargs.get('name', random_string(10))
@@ -44,21 +53,14 @@ class User:
         self.friend = kwargs.get('friend', None)
 
 
+# ======= Main ======= #
+
 try:
     dsn = 'dbname=postgres user=postgres password=root host=127.0.0.1 '
     pool = psycopg2.pool.SimpleConnectionPool(1, 250, dsn=dsn)
 except Exception as e:
     sys.stderr.write(str(e))
     sys.exit(e)
-
-
-@contextmanager
-def get_cursor():
-    con = pool.getconn()
-    try:
-        yield con.cursor()
-    finally:
-        pool.putconn(con)
 
 
 app = Flask(__name__)
@@ -94,7 +96,4 @@ def db():
 
 
 if __name__ == '__main__':
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(logging.ERROR)
-    app.logger.addHandler(stream_handler)
     app.run(host=HOST, port=PORT)
