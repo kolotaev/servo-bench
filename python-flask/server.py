@@ -1,10 +1,13 @@
 import os
+import sys
 import random
 import string
+import logging
+from contextlib import contextmanager
 
-import psycopg2
-from flask import Flask, render_template, jsonify
-
+import psycopg2.pool
+from flask import Flask, jsonify
+from flask.json import JSONEncoder
 
 
 HOST = '0.0.0.0'
@@ -21,33 +24,45 @@ def create_user():
     return User(friend=User())
 
 
+class MyJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, User):
+            return obj.__dict__
+        return super().default(obj)
+
+
 class User:
     def __init__(self, **kwargs):
-        self.name: kwargs.get('name', random_string(10))
-        self.surname: kwargs.get('surname', random_string(3))
-        self.street: kwargs.get('street', random_string(15))
-        self.school: kwargs.get('school', random_string(9))
-        self.bank: kwargs.get('bank', random_string(4))
-        self.a: kwargs.get('a', random.randint(0, 100))
-        self.b: kwargs.get('b', random.random())
-        self.c: kwargs.get('c', random.randint(0, 1090))
-        self.friend: kwargs.get('friend', None)
-
-    def __str__(self):
-        return self.__dict__
+        self.name = kwargs.get('name', random_string(10))
+        self.surname = kwargs.get('surname', random_string(3))
+        self.street = kwargs.get('street', random_string(15))
+        self.school = kwargs.get('school', random_string(9))
+        self.bank = kwargs.get('bank', random_string(4))
+        self.a = kwargs.get('a', random.randint(0, 100))
+        self.b = kwargs.get('b', random.random())
+        self.c = kwargs.get('c', random.randint(0, 1090))
+        self.friend = kwargs.get('friend', None)
 
 
 try:
-    db = 'dbname=postgres user=postgres password=rot host=127.0.0.1 '
-    schema = "schema.sql"
-    conn = psycopg2.connect(db)
-    cur = conn.cursor()
+    dsn = 'dbname=postgres user=postgres password=root host=127.0.0.1 '
+    pool = psycopg2.pool.SimpleConnectionPool(1, 250, dsn=dsn)
 except Exception as e:
-    print(e)
-    exit(1)
+    sys.stderr.write(str(e))
+    sys.exit(e)
+
+
+@contextmanager
+def get_cursor():
+    con = pool.getconn()
+    try:
+        yield con.cursor()
+    finally:
+        pool.putconn(con)
 
 
 app = Flask(__name__)
+app.json_encoder = MyJSONEncoder
 
 
 @app.route('/')
@@ -67,21 +82,19 @@ def json():
 
 @app.route('/db')
 def db():
-    try:
-        my_list = []
-        if cur != None:
-            cur.execute("""SELECT name from salesforce.contact""")
-            rows = cur.fetchall()
-            response = ''
-
-            for row in rows:
-                my_list.append(row[0])
-
-        return render_template('template.html',  results=my_list)
-    except Exception as e:
-        print e
-        return []
+    qry = 'SELECT pg_sleep(%f)' % random.uniform(0, SLEEP_MAX)
+    with get_cursor() as cur:
+        cur.execute(qry)
+        cur.fetchall()
+    users = []
+    for i in range(LOOP_COUNT):
+        user = create_user()
+        users.append(user)
+    return jsonify({'db-query': qry, 'data': users})
 
 
 if __name__ == '__main__':
-    app.run()
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.ERROR)
+    app.logger.addHandler(stream_handler)
+    app.run(host=HOST, port=PORT)

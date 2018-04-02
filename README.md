@@ -70,7 +70,10 @@ Transfer/sec:     25.89MB
 
 ### Python. Flask.
 
-- [Site](http://flask.pocoo.org)
+- [Flask](http://flask.pocoo.org)
+- [Gunicorn](http://gunicorn.org/#docs)
+
+Using Gunicorn as a web-server. 4 workers.
 
 
 ## Mule script
