@@ -98,38 +98,26 @@ cd go-echo
 
 Available actions of using `mule` (assuming the 2nd way of running):
 
-- Read help for `mule` script
 ```bash
+# Read help for `mule` script
 ../mule.sh -h
-```
 
-- Build/rebuild image
-```bash
+# Build/rebuild image
 ../mule.sh -b
-```
 
-- Run container
-```bash
+# Run container
 ../mule.sh -r
-```
 
-- Run container with attached TTY (to see its output)
-```bash
+# Run container with attached TTY (to see its output)
 ../mule.sh -ra
-```
 
-- Kill running container
-```bash
+# Kill running container
 ../mule.sh -k
-```
 
-- Build image, kill container if running, run new w/ attached TTY
-```bash
+# Build image, kill container if running, run new w/ attached TTY
 ../mule.sh -brak
-```
 
-- Run with specific options (port, loop-count, etc.)
-```bash
+# Run with specific options (port, loop-count, etc.)
 ../mule.sh -ra -p 8088 -l 1000
 ```
 

@@ -96,4 +96,5 @@ def db():
 
 
 if __name__ == '__main__':
+    print('Using SQL_SLEEP_MAX = %i seconds; LOOP_COUNT = %i' % (SLEEP_MAX, LOOP_COUNT))
     app.run(host=HOST, port=PORT)
