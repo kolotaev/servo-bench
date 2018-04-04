@@ -117,8 +117,8 @@ Available actions of using `mule` (assuming the 2nd way of running):
 # Build image, kill container if running, run new w/ attached TTY
 ../mule.sh -brak
 
-# Run with specific options (port, loop-count, etc.)
-../mule.sh -ra -p 8088 -l 1000
+# Run with specific options (loop-count, etc.)
+../mule.sh -ra -l 1000
 ```
 
 

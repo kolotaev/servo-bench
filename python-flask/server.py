@@ -2,6 +2,7 @@ import os
 import sys
 import random
 import string
+import logging
 from contextlib import contextmanager
 
 import psycopg2.pool
@@ -55,17 +56,20 @@ class User:
 
 # ======= Main ======= #
 
+app = Flask(__name__)
+app.json_encoder = MyJSONEncoder
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.ERROR)
+app.logger.error('Using SQL_SLEEP_MAX = %i seconds; LOOP_COUNT = %i' % (SLEEP_MAX, LOOP_COUNT))
 try:
     dsn = 'dbname=postgres user=postgres password=root host=127.0.0.1 '
     pool = psycopg2.pool.SimpleConnectionPool(1, 250, dsn=dsn)
 except Exception as e:
-    sys.stderr.write(str(e))
+    app.logger.error(e)
     sys.exit(e)
 
 
-app = Flask(__name__)
-app.json_encoder = MyJSONEncoder
-
+# ====== Routes ====== #
 
 @app.route('/')
 def home():
@@ -96,5 +100,4 @@ def db():
 
 
 if __name__ == '__main__':
-    print('Using SQL_SLEEP_MAX = %i seconds; LOOP_COUNT = %i' % (SLEEP_MAX, LOOP_COUNT))
     app.run(host=HOST, port=PORT)

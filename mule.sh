@@ -4,7 +4,6 @@
 DO_KILL=false
 DO_BUILD=false
 DO_RUN=false
-PORT=8080
 ATTACHED=false
 SQL_SLEEP_MAX=2 # seconds
 LOOP_COUNT=100
@@ -58,7 +57,6 @@ function launch_container() {
             CMD="${CMD} -d "
         fi
 
-        CMD="${CMD} -p ${PORT}:8080"
         CMD="${CMD} -e SQL_SLEEP_MAX=${SQL_SLEEP_MAX} -e LOOP_COUNT=${LOOP_COUNT}"
         CMD="${CMD} --net=host $IMAGE"
 
@@ -79,7 +77,6 @@ OPTIONS:
    -b      Build image? (default: false)
    -k      Kill the previously run container? (default: false)
    -a      Attach container's TTY? (default: false)
-   -p      Specify the port of the host machine for forwarding (default: 8080)
    -l      Max loop count for service load. Docker container env variable LOOP_COUNT (default: 100)
    -s      Max sleep seconds for DB call. Docker container env variable SQL_SLEEP_MAX (default: 2)
    -h      Show script usage
@@ -98,7 +95,6 @@ do
     k) DO_KILL=true;;
     b) DO_BUILD=true;;
     a) ATTACHED=true;;
-    p) PORT=${OPTARG};;
     l) LOOP_COUNT=${OPTARG};;
     s) SQL_SLEEP_MAX=${OPTARG};;
     h) show_usage; exit;;
