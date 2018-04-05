@@ -74,8 +74,9 @@ Transfer/sec:     25.89MB
 
 - [Flask](http://flask.pocoo.org)
 - [Gunicorn](http://gunicorn.org/#docs)
+- [Eventlet](http://eventlet.net)
 
-Using Gunicorn as a web-server. 4 workers.
+Using Gunicorn as a web-server. 4 workers. Worker type - async: eventlet
 
 
 
