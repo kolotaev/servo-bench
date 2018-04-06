@@ -13,10 +13,10 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   end
 
+  config.vm.provision "shell", path: "provision.sh", privileged: true
+
   config.vm.hostname = "test-machine"
   config.vm.network :forwarded_port, guest: 8080, host: 8088
 
   config.vm.synced_folder ".", "/shared"
-
-  config.vm.provision "shell", path: "provision.sh", privileged: true
 end

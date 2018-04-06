@@ -3,7 +3,7 @@
 FROM python:alpine3.7
 
 RUN apk update && \
-    apk add --virtual build-deps gcc python-dev musl-dev && \
+    apk add --virtual build-deps gcc musl-dev && \
     apk add postgresql-dev
 
 # Create app directory
