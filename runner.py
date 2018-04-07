@@ -41,12 +41,11 @@ def vagrant():
         # pexpect.run('vagrant halt')
 
 
-@contextmanager
-def counter(n):
+def counter(cb, n):
     count = 0
     while count < n:
         try:
-            yield
+            cb()
         except Exception as e:
             print(e)
         finally:
@@ -77,7 +76,8 @@ def run(s, framework, endpoint):
 
     def measure():
         time.sleep(20)
-        with counter(5):
+
+        def task():
             time.sleep(10)
             s.sendline(cmd['free-mem'])
             s.expect(SEARCH_PATTERN, timeout=100)
@@ -85,6 +85,7 @@ def run(s, framework, endpoint):
             s.sendline(cmd['cpu-usage'])
             s.expect(SEARCH_PATTERN, timeout=100)
             cpu_samples.append(s.match.groups()[0])
+        counter(task, 5)
 
     # set bash-prompt for further reliable checks
     s.sendline('PS1=' + PROMPT)
@@ -112,10 +113,10 @@ def run(s, framework, endpoint):
     # get cpu usage: %
     s.sendline(cmd['cpu-usage'])
     s.expect(SEARCH_PATTERN)
-    cpu_usage = s.match.groups()[0]
+    cpu_before = s.match.groups()[0]
 
     print('Mem, kb: ---->', mem_before)
-    print('CPU, %:  ---->', cpu_usage)
+    print('CPU, %:  ---->', cpu_before)
 
     # start background sampling thread
     t = threading.Thread(target=measure)
@@ -127,8 +128,12 @@ def run(s, framework, endpoint):
     for l in res.splitlines():
         print(l)
 
-    print(mem_samples)
-    print(cpu_samples)
+    print('Resource measurements during benchmark:')
+    print('Memory: ', mem_samples)
+    print('CPU: ', cpu_samples)
+    print('Memory used, kb: ', sum(mem_samples)/len(mem_samples) - mem_before)
+    print('CPU used, %: ', sum(cpu_samples)/len(cpu_samples) - cpu_before)
+
     print('Exiting...')
     t.join(RUN_TIME + 60)
     s.sendline('exit')
@@ -144,4 +149,3 @@ if __name__ == '__main__':
     with vagrant() as ssh:
         for f, e in suits:
             run(ssh, f, e)
-            # time.sleep(60)
