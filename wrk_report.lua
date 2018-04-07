@@ -8,3 +8,7 @@ done = function(summary, latency, requests)
         io.write(string.format("%g%%,%d\n", p, n))
     end
 end
+
+for _, _ in pairs({ 9, 9, 0, 90, 9, 89, 89, 8 }) do
+    print('hello')
+end
