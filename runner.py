@@ -27,18 +27,16 @@ SEARCH_PATTERN = '___([0-9]+\.?[0-9]?)___'
 def vagrant():
     try:
         print('Upping vagrant...')
-        # pexpect.run('vagrant up', timeout=300)
+        pexpect.run('vagrant up', timeout=300)
         child = pexpect.spawnu('vagrant ssh')
         child.expect('Last login')
-
         # child.logfile_read = sys.stdout
-
         child.setecho(False)
-
         yield child
+        child.close(force=True)
     finally:
         print('Halting vagrant...')
-        # pexpect.run('vagrant halt')
+        pexpect.run('vagrant halt')
 
 
 def counter(cb, n):
@@ -108,12 +106,12 @@ def run(s, framework, endpoint):
     # get memory usage: bytes
     s.sendline(cmd['free-mem'])
     s.expect(SEARCH_PATTERN)
-    mem_before = s.match.groups()[0]
+    mem_before = int(s.match.groups()[0])
 
     # get cpu usage: %
     s.sendline(cmd['cpu-usage'])
     s.expect(SEARCH_PATTERN)
-    cpu_before = s.match.groups()[0]
+    cpu_before = float(s.match.groups()[0])
 
     print('Mem, kb: ---->', mem_before)
     print('CPU, %:  ---->', cpu_before)
@@ -131,8 +129,10 @@ def run(s, framework, endpoint):
     print('Resource measurements during benchmark:')
     print('Memory: ', mem_samples)
     print('CPU: ', cpu_samples)
-    print('Memory used, kb: ', sum(mem_samples)/len(mem_samples) - mem_before)
-    print('CPU used, %: ', sum(cpu_samples)/len(cpu_samples) - cpu_before)
+    mem_samples = list(map(int, mem_samples))
+    cpu_samples = list(map(float, cpu_samples))
+    print('Memory used, mb: ', round(((sum(mem_samples)/len(mem_samples) - mem_before) / 1000), 1))
+    print('CPU used, %: ', round((sum(cpu_samples)/len(cpu_samples) - cpu_before), 1))
 
     print('Exiting...')
     t.join(RUN_TIME + 60)
@@ -149,3 +149,4 @@ if __name__ == '__main__':
     with vagrant() as ssh:
         for f, e in suits:
             run(ssh, f, e)
+            time.sleep(60)

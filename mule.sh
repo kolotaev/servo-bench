@@ -67,11 +67,34 @@ function launch_container() {
     fi
 }
 
+function build_all_images() {
+    DO_BUILD=true
+    root_test="/shared"
+    root=$(pwd)
+    if [[ ! "$root" = "$root_test" ]];
+    then
+        echo "You must be in repo's root dir: ${root_test}"
+        echo "current dir is ${root}"
+        exit
+    fi
+    image_dirs=$(find . -type f -name 'Dockerfile' | sed -r 's|/[^/]+$||' | sort | uniq)
+    for f in $image_dirs; do
+        echo "cd into ${f}"
+        cd "$f"
+        echo '----'
+        define_image
+        build_image
+        cd "$root"
+        IMAGE=""
+    done
+}
+
 function show_usage() {
 cat << EOF
 -------------------------------------------
 This script runs docker container for specific framework.
 OPTIONS:
+   -x      Build docker images for all frameworks (useful for a newly deployed machine)
    -d      Directory name of the framework service (if not specified, defaults to the current directory)
    -r      Run container? (default: false)
    -b      Build image? (default: false)
@@ -86,7 +109,7 @@ EOF
 
 
 # Running Main!
-while getopts d:p:l:s:ahkbr option
+while getopts d:p:l:s:ahkbrx option
 do
     case "${option}"
     in
@@ -97,6 +120,7 @@ do
     a) ATTACHED=true;;
     l) LOOP_COUNT=${OPTARG};;
     s) SQL_SLEEP_MAX=${OPTARG};;
+    x) build_all_images; exit;;
     h) show_usage; exit;;
     \?) show_usage; exit;;
     esac
