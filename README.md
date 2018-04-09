@@ -103,6 +103,9 @@ Available actions of using `mule` (assuming the 2nd way of running):
 # Read help for `mule` script
 ../mule.sh -h
 
+# Build all images
+./mule.sh -x
+
 # Build/rebuild image
 ../mule.sh -b
 

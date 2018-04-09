@@ -8,18 +8,20 @@ from contextlib import contextmanager
 import pexpect
 
 
-RUN_TIME = 120
+RUN_TIME = 50
+SAMPLE_NUM = 5
 
 PROMPT = 'vagrant@servobench'
 
 cmd = {
     'free-mem': "free | awk '/Mem/{print \"___\"$3 + 0\"___\"}'",
     'cpu-usage': "top -bn3 | grep Cpu\(s\) | awk 'NR == 3 { print \"___\"$2 + $4\"___\"}'",  # get us + sys
-    'wrk': 'wrk -t12 -c400 -d%ds http://localhost:8080/%s',
+    'wrk': 'sleep %d; echo "%s"',
     'cd-framework': 'cd /shared/%s',
     'docker-run': '../mule.sh -rk'
 }
 
+# for awk-ed 'top' command output
 SEARCH_PATTERN = '___([0-9]+\.?[0-9]?)___'
 
 
@@ -73,17 +75,17 @@ def run(s, framework, endpoint):
     cd_cmd = cmd['cd-framework'] % framework
 
     def measure():
-        time.sleep(20)
+        time.sleep(RUN_TIME * 0.2)
 
         def task():
-            time.sleep(10)
+            time.sleep(RUN_TIME * 0.6 / SAMPLE_NUM /2)
             s.sendline(cmd['free-mem'])
             s.expect(SEARCH_PATTERN, timeout=100)
             mem_samples.append(s.match.groups()[0])
             s.sendline(cmd['cpu-usage'])
             s.expect(SEARCH_PATTERN, timeout=100)
             cpu_samples.append(s.match.groups()[0])
-        counter(task, 5)
+        counter(task, SAMPLE_NUM)
 
     # set bash-prompt for further reliable checks
     s.sendline('PS1=' + PROMPT)
@@ -122,7 +124,7 @@ def run(s, framework, endpoint):
 
     # Run wrk benchmark
     print('Running wrk...')
-    res = pexpect.runu(wrk_cmd, timeout=100000)
+    res = pexpect.runu(wrk_cmd, timeout=1000000)
     for l in res.splitlines():
         print(l)
 
@@ -141,6 +143,7 @@ def run(s, framework, endpoint):
     if index == 1:
         s.sendline("exit")
         s.expect(pexpect.EOF)
+    s.close()
 
 
 if __name__ == '__main__':
