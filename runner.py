@@ -8,7 +8,7 @@ from contextlib import contextmanager
 import pexpect
 
 
-RUN_TIME = 50
+RUN_TIME = 120  # in seconds
 SAMPLE_NUM = 5
 
 PROMPT = 'vagrant@servobench'
@@ -16,7 +16,7 @@ PROMPT = 'vagrant@servobench'
 cmd = {
     'free-mem': "free | awk '/Mem/{print \"___\"$3 + 0\"___\"}'",
     'cpu-usage': "top -bn3 | grep Cpu\(s\) | awk 'NR == 3 { print \"___\"$2 + $4\"___\"}'",  # get us + sys
-    'wrk': 'sleep %d; echo "%s"',
+    'wrk': 'wrk -t12 -c400 -d%ds http://localhost:8080/%s',
     'cd-framework': 'cd /shared/%s',
     'docker-run': '../mule.sh -rk'
 }
@@ -38,7 +38,7 @@ def vagrant():
         child.close(force=True)
     finally:
         print('Halting vagrant...')
-        pexpect.run('vagrant halt')
+        pexpect.run('vagrant halt', timeout=300)
 
 
 def counter(cb, n):
@@ -57,7 +57,7 @@ def selector(typ, proposed):
     msg = 'Select %s(s) you want to test. Type number(s) (e.g. 10 3). Default: All.\n' % typ
     for i, x in enumerate(proposed):
         print('%d) - %s' % (i + 1, os.path.basename(x)))
-    ids = list(map(lambda y: int(y) - 1, filter(None, input(msg).strip().split(' ')))) or list(range(len(proposed)))
+    ids = list(map(lambda y: int(y) - 1, filter(None, input(msg).split()))) or list(range(len(proposed)))
     return [proposed[i] for i in ids]
 
 
@@ -74,18 +74,21 @@ def run(s, framework, endpoint):
     wrk_cmd = cmd['wrk'] % (RUN_TIME, endpoint)
     cd_cmd = cmd['cd-framework'] % framework
 
-    def measure():
+    def sample_it():
         time.sleep(RUN_TIME * 0.2)
 
         def task():
-            time.sleep(RUN_TIME * 0.6 / SAMPLE_NUM /2)
+            time.sleep(RUN_TIME * 0.6 / SAMPLE_NUM / 2)
             s.sendline(cmd['free-mem'])
             s.expect(SEARCH_PATTERN, timeout=100)
             mem_samples.append(s.match.groups()[0])
             s.sendline(cmd['cpu-usage'])
             s.expect(SEARCH_PATTERN, timeout=100)
             cpu_samples.append(s.match.groups()[0])
+
         counter(task, SAMPLE_NUM)
+
+    print('=' * 15, 'Working on %s endpoint' % endpoint.upper(), '=' * 15)
 
     # set bash-prompt for further reliable checks
     s.sendline('PS1=' + PROMPT)
@@ -105,21 +108,21 @@ def run(s, framework, endpoint):
     s.expect(PROMPT)
 
     print('Sampling resources before run...')
-    # get memory usage: bytes
-    s.sendline(cmd['free-mem'])
-    s.expect(SEARCH_PATTERN)
-    mem_before = int(s.match.groups()[0])
-
     # get cpu usage: %
     s.sendline(cmd['cpu-usage'])
     s.expect(SEARCH_PATTERN)
     cpu_before = float(s.match.groups()[0])
 
+    # get memory usage: bytes
+    s.sendline(cmd['free-mem'])
+    s.expect(SEARCH_PATTERN)
+    mem_before = int(s.match.groups()[0])
+
     print('Mem, kb: ---->', mem_before)
     print('CPU, %:  ---->', cpu_before)
 
     # start background sampling thread
-    t = threading.Thread(target=measure)
+    t = threading.Thread(target=sample_it)
     t.start()
 
     # Run wrk benchmark
@@ -138,12 +141,6 @@ def run(s, framework, endpoint):
 
     print('Exiting...')
     t.join(RUN_TIME + 60)
-    s.sendline('exit')
-    index = s.expect([pexpect.EOF, "(?i)there are stopped jobs"])
-    if index == 1:
-        s.sendline("exit")
-        s.expect(pexpect.EOF)
-    s.close()
 
 
 if __name__ == '__main__':
