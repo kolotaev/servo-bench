@@ -6,7 +6,8 @@
   - [Go. Echo.](#go-echo)
   - [JS. Express.](#js-express)
   - [Python. Flask.](#python-flask)
-- [Mule script](#mule-scrip)
+- [Mule script](#mule-script)
+- [Runner script](#runner-script)
 - [Results](#results)
 
 
@@ -86,7 +87,7 @@ Using Gunicorn as a web-server. 4 workers. Worker type - async: eventlet
 
 `mule`is a script to help you build and run specific framework in a docker-container.
 
-Script can be run by 2 possible ways:
+Script can be run in 2 possible ways:
 
 ```bash
 # 1. From repo's root directory: you need to specify directory of the framework in -d option.

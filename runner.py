@@ -8,7 +8,7 @@ from contextlib import contextmanager
 import pexpect
 
 
-RUN_TIME = 120  # in seconds
+RUN_TIME = 300  # in seconds
 SAMPLE_NUM = 5
 
 PROMPT = 'vagrant@servobench'
