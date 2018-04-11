@@ -24,6 +24,10 @@ cmd = {
 # for awk-ed 'top' command output
 SEARCH_PATTERN = '___([0-9]+\.?[0-9]?)___'
 
+# Global vars
+cpu_before = 0
+mem_before = 0
+
 
 @contextmanager
 def vagrant():
@@ -68,7 +72,20 @@ def ask_suites():
     return list(itertools.product(selector('framework', dirs), selector('endpoint', apis)))
 
 
+def do_report(cpu_samples, mem_samples):
+    consumed = lambda x, y: round(((sum(x) / len(x) - y) / 1000), 1)
+    mem_samples = list(map(int, mem_samples))
+    cpu_samples = list(map(float, cpu_samples))
+    print('Memory: ', mem_samples)
+    print('CPU: ', cpu_samples)
+    cpu_used = consumed(cpu_samples, cpu_before)
+    mem_used = consumed(mem_samples, mem_before)
+    print('Memory used, mb: ', mem_used)
+    print('CPU used, %: ', cpu_used)
+
+
 def run(s, framework, endpoint):
+    global cpu_before, mem_before
     mem_samples = []
     cpu_samples = []
     wrk_cmd = cmd['wrk'] % (RUN_TIME, endpoint)
@@ -88,7 +105,7 @@ def run(s, framework, endpoint):
 
         counter(task, SAMPLE_NUM)
 
-    print('=' * 15, 'Working on %s endpoint' % endpoint.upper(), '=' * 15)
+    print('=' * 15, 'Working. %s server. %s endpoint.' % (framework.upper(), endpoint.upper()), '=' * 15)
 
     # set bash-prompt for further reliable checks
     s.sendline('PS1=' + PROMPT)
@@ -131,13 +148,8 @@ def run(s, framework, endpoint):
     for l in res.splitlines():
         print(l)
 
-    print('Resource measurements during benchmark:')
-    print('Memory: ', mem_samples)
-    print('CPU: ', cpu_samples)
-    mem_samples = list(map(int, mem_samples))
-    cpu_samples = list(map(float, cpu_samples))
-    print('Memory used, mb: ', round(((sum(mem_samples)/len(mem_samples) - mem_before) / 1000), 1))
-    print('CPU used, %: ', round((sum(cpu_samples)/len(cpu_samples) - cpu_before), 1))
+    print('Reporting resource measurements during benchmark...')
+    do_report(cpu_samples=cpu_samples, mem_samples=mem_samples)
 
     print('Exiting...')
     t.join(RUN_TIME + 60)
