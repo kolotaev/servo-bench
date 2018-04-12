@@ -16,7 +16,7 @@ apt-get install postgresql-9.4 postgresql-client-9.4 -y
 sudo -u postgres psql -c "ALTER USER \"postgres\" WITH PASSWORD 'root';"
 mkdir -p /etc/postgresql/9.4/main/conf.d
 cp /shared/postgres_custom.conf /etc/postgresql/9.4/main/conf.d/00postgres_custom.conf
-service postgresql restart
+echo "include_dir 'conf.d'" >> /etc/postgresql/9.4/main/postgresql.conf
 
 # Install Docker
 if [ -x "$(command -v docker)" ]; then
@@ -51,3 +51,13 @@ echo "*            hard nofile     40000" >> /etc/security/limits.conf
 echo "*            soft nofile     40000" >> /etc/security/limits.conf
 
 sysctl -w net.ipv4.tcp_congestion_control=cubic
+
+# ? https://stackoverflow.com/questions/9798705/arval-sqlexception-fatal-sorry-too-many-clients-already-in-postgres#14191857
+sysctl -w kernel.shmmax=134217728
+sysctl -w kernel.shmall=2097152
+echo "kernel.shmmax=134217728" >> /etc/sysctl.conf
+echo "kernel.shmall=2097152" >> /etc/sysctl.conf
+
+
+# Restarting services
+service postgresql restart

@@ -1,9 +1,11 @@
 import os
 import sys
+import re
 import time
 import threading
 import itertools
 from contextlib import contextmanager
+from string import Template
 
 import pexpect
 
@@ -23,6 +25,28 @@ cmd = {
 
 # for awk-ed 'top' command output
 SEARCH_PATTERN = '___([0-9]+\.?[0-9]?)___'
+
+REPORT_FILE = 'runner-results.md'
+
+REPORT_TEMPLATE = """
+==========================
+Date: $current_time
+Results:
+
+| Param                 | Value |
+| :---                  | :--- |
+| Framework             | $framework |
+| Endpoint              | /$endpoint  |
+| Test run time         | $time  |
+| N connections         | $connections  |
+| N threads             | $threds  |
+| N timeout-ed          | $timeouted  |
+| Data read             | $data_read  |
+| Requests/sec          | $requests_per_second |
+| Memory used, Mb       | $mem_used |
+| CPU used, %           | $cpu_used |
+==========================
+"""
 
 # Global vars
 cpu_before = 0
@@ -72,16 +96,26 @@ def ask_suites():
     return list(itertools.product(selector('framework', dirs), selector('endpoint', apis)))
 
 
-def do_report(cpu_samples, mem_samples):
-    consumed = lambda x, y: round(((sum(x) / len(x) - y) / 1000), 1)
+def do_report(cpu_samples, mem_samples, **kwargs):
+    consumed_mem = lambda x, y: round(((sum(x) / len(x) - y) / 1000), 1)
+    consumed_cpu = lambda x, y: round((sum(x) / len(x) - y), 1)
     mem_samples = list(map(int, mem_samples))
     cpu_samples = list(map(float, cpu_samples))
     print('Memory: ', mem_samples)
     print('CPU: ', cpu_samples)
-    cpu_used = consumed(cpu_samples, cpu_before)
-    mem_used = consumed(mem_samples, mem_before)
+    cpu_used = consumed_cpu(cpu_samples, cpu_before)
+    mem_used = consumed_mem(mem_samples, mem_before)
+    if mem_used < 0:
+        mem_used = 0
     print('Memory used, mb: ', mem_used)
     print('CPU used, %: ', cpu_used)
+    print('Doing report to file...')
+    kwargs['cpu_used'] = cpu_used
+    kwargs['mem_used'] = mem_used
+    kwargs['current_time'] = time.ctime()
+    report = Template(REPORT_TEMPLATE).substitute(kwargs)
+    with open(REPORT_FILE, "a") as f:
+        f.write(report)
 
 
 def run(s, framework, endpoint):
@@ -148,8 +182,29 @@ def run(s, framework, endpoint):
     for l in res.splitlines():
         print(l)
 
+    m = re.search('Running(.+?)test', res)
+    run_time = m.group(1).strip() if m else 'unknown'
+    m = re.search('(\d+).*threads.*?(\d+).*connections', res)
+    run_threads = m.group(1).strip() if m else 'unknown'
+    run_connections = m.group(2).strip() if m else 'unknown'
+    m = re.search('Socket errors.*timeout.*?(\d+)', res)
+    run_timeout_number = int(m.group(1).strip()) if m else 'unknown'
+    m = re.search(', (.+?) read', res)
+    data_read = m.group(1).strip() if m else 'unknown'
+    m = re.search('Requests/sec:\W*([\.*\d+])', res)
+    run_req_sec = m.group(1).strip() if m else 'unknown'
+
     print('Reporting resource measurements during benchmark...')
-    do_report(cpu_samples=cpu_samples, mem_samples=mem_samples)
+    do_report(cpu_samples=cpu_samples,
+              mem_samples=mem_samples,
+              framework=framework,
+              endpoint=endpoint,
+              time=run_time,
+              connections=run_connections,
+              threds=run_threads,
+              timeouted=run_timeout_number,
+              data_read=data_read,
+              requests_per_second=run_req_sec)
 
     print('Exiting...')
     t.join(RUN_TIME + 60)

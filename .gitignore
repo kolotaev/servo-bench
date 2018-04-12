@@ -68,3 +68,6 @@ venv
 *.pyc
 *.py~
 
+
+# Reports
+runner-results*
