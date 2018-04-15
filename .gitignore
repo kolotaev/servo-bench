@@ -71,3 +71,6 @@ venv
 
 # Reports
 runner-results*
+
+# For clojure leiningen
+target/

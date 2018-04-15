@@ -1,4 +1,4 @@
-(ns helloworld.core
+(ns serv.core
     (:require [ring.adapter.jetty :as jetty])
     (:gen-class))
 
