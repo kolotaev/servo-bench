@@ -12,11 +12,13 @@ apt-get install python3 -y
 # Install Postgres 9.4
 apt-get install postgresql-9.4 postgresql-client-9.4 -y
 
+
 # Configure Postgres
 sudo -u postgres psql -c "ALTER USER \"postgres\" WITH PASSWORD 'root';"
 mkdir -p /etc/postgresql/9.4/main/conf.d
 cp /shared/postgres_custom.conf /etc/postgresql/9.4/main/conf.d/00postgres_custom.conf
 echo "include_dir 'conf.d'" >> /etc/postgresql/9.4/main/postgresql.conf
+
 
 # Install Docker
 if [ -x "$(command -v docker)" ]; then
@@ -29,8 +31,10 @@ else
     usermod -aG docker vagrant
 fi
 
+
 # Build all images
 cd /shared && ./mule.sh -x && cd -
+
 
 # Configure system for high load.
 sysctl -w net.core.rmem_max=16777216
@@ -51,6 +55,7 @@ echo "*            hard nofile     40000" >> /etc/security/limits.conf
 echo "*            soft nofile     40000" >> /etc/security/limits.conf
 
 sysctl -w net.ipv4.tcp_congestion_control=cubic
+
 
 # ?
 # https://stackoverflow.com/questions/9798705/arval-sqlexception-fatal-sorry-too-many-clients-already-in-postgres#14191857
