@@ -1,11 +1,23 @@
 (ns serv.core
-    (:require [ring.adapter.jetty :as jetty])
+    (:use compojure.core
+          [ring.adapter.jetty :only [run-jetty]])
+    (:require [compojure.route :as route]
+              [compojure.handler :as handler])
     (:gen-class))
 
-(defn handler [request]
-  {:status  200
-   :headers {"Content-Type" "text/plain"}
-   :body    "Hello Clojure, Hello Ring!"})
+
+
+
+(defroutes main-routes
+  (GET "/" [] "Powered by foo")
+  (GET "/json" (json-endpoint))
+  (GET "/db" (db-endpoint))
+
+  (route/resources "/")
+  (route/not-found "Page not found"))
+
+(def app
+  (handler/api main-routes))
 
 (defn -main []
-  (jetty/run-jetty handler {:port 8080}))
+  (run-jetty app {:port 8080}))
