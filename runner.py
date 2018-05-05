@@ -1,5 +1,4 @@
 import os
-import sys
 import re
 import time
 import threading
@@ -11,16 +10,18 @@ import pexpect
 
 
 RUN_TIME = 300  # in seconds
-SAMPLE_NUM = 5
+SAMPLE_NUM = 5  # time to do measurement during the period of run
+SQL_SLEEP_MAX = 3  # SQL query sleep time seconds
+LOOP_COUNT = 1000  # Iterate times creating objects to push some CPU/Mem load
 
 PROMPT = 'vagrant@servobench'
 
-cmd = {
+CMDS = {
     'free-mem': "free | awk '/Mem/{print \"___\"$3 + 0\"___\"}'",
     'cpu-usage': "top -bn3 | grep Cpu\(s\) | awk 'NR == 3 { print \"___\"$2 + $4\"___\"}'",  # get us + sys
     'wrk': 'wrk -t12 -c400 -d%ds http://localhost:8080/%s',
     'cd-framework': 'cd /shared/%s',
-    'docker-run': '../mule.sh -rk'
+    'docker-run': '../mule.sh -rk -s %d -l %d' % (SQL_SLEEP_MAX, LOOP_COUNT)
 }
 
 # for awk-ed 'top' command output
@@ -122,18 +123,18 @@ def run(s, framework, endpoint):
     global cpu_before, mem_before
     mem_samples = []
     cpu_samples = []
-    wrk_cmd = cmd['wrk'] % (RUN_TIME, endpoint)
-    cd_cmd = cmd['cd-framework'] % framework
+    wrk_cmd = CMDS['wrk'] % (RUN_TIME, endpoint)
+    cd_cmd = CMDS['cd-framework'] % framework
 
     def sample_it():
         time.sleep(RUN_TIME * 0.2)
 
         def task():
             time.sleep(RUN_TIME * 0.6 / SAMPLE_NUM / 2)
-            s.sendline(cmd['free-mem'])
+            s.sendline(CMDS['free-mem'])
             s.expect(SEARCH_PATTERN, timeout=100)
             mem_samples.append(s.match.groups()[0])
-            s.sendline(cmd['cpu-usage'])
+            s.sendline(CMDS['cpu-usage'])
             s.expect(SEARCH_PATTERN, timeout=100)
             cpu_samples.append(s.match.groups()[0])
 
@@ -153,19 +154,19 @@ def run(s, framework, endpoint):
     s.expect(framework)
 
     # run docker
-    print('run docker... ', cmd['docker-run'])
-    s.sendline(cmd['docker-run'])
+    print('run docker... ', CMDS['docker-run'])
+    s.sendline(CMDS['docker-run'])
     s.expect('Launching container')
     s.expect(PROMPT)
 
     print('Sampling resources before run...')
     # get cpu usage: %
-    s.sendline(cmd['cpu-usage'])
+    s.sendline(CMDS['cpu-usage'])
     s.expect(SEARCH_PATTERN)
     cpu_before = float(s.match.groups()[0])
 
     # get memory usage: bytes
-    s.sendline(cmd['free-mem'])
+    s.sendline(CMDS['free-mem'])
     s.expect(SEARCH_PATTERN)
     mem_before = int(s.match.groups()[0])
 
