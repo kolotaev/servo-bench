@@ -13,13 +13,15 @@ RUN_TIME = 300  # in seconds
 SAMPLE_NUM = 5  # time to do measurement during the period of run
 SQL_SLEEP_MAX = 3  # SQL query sleep time seconds
 LOOP_COUNT = 1000  # Iterate times creating objects to push some CPU/Mem load
+THREADS = 12       # threads number for wrk run
+CONNECTIONS = 400  # connections number for wrk run
 
 PROMPT = 'vagrant@servobench'
 
 CMDS = {
     'free-mem': "free | awk '/Mem/{print \"___\"$3 + 0\"___\"}'",
     'cpu-usage': "top -bn3 | grep Cpu\(s\) | awk 'NR == 3 { print \"___\"$2 + $4\"___\"}'",  # get us + sys
-    'wrk': 'wrk -t12 -c400 -d%ds http://localhost:8080/%s',
+    'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s',
     'cd-framework': 'cd /shared/%s',
     'docker-run': '../mule.sh -rk -s %d -l %d' % (SQL_SLEEP_MAX, LOOP_COUNT)
 }
@@ -44,6 +46,7 @@ Results:
 | N timeout-ed          | $timeouted  |
 | Data read             | $data_read  |
 | Requests/sec          | $requests_per_second |
+| Latency               | $latency |
 | Memory used, Mb       | $mem_used |
 | CPU used, %           | $cpu_used |
 ==========================
@@ -192,8 +195,10 @@ def run(s, framework, endpoint):
     run_timeout_number = int(m.group(1).strip()) if m else 'unknown'
     m = re.search(', (.+?) read', res)
     data_read = m.group(1).strip() if m else 'unknown'
-    m = re.search('Requests/sec:\W*([\.*\d+])', res)
+    m = re.search('Requests/sec:\W*([.*\d+])', res)
     run_req_sec = m.group(1).strip() if m else 'unknown'
+    m = re.search('Latency\W*([.*\w*\d+])', res)
+    run_latency = m.group(1).strip() if m else 'unknown'
 
     print('Reporting resource measurements during benchmark...')
     do_report(cpu_samples=cpu_samples,
@@ -205,7 +210,8 @@ def run(s, framework, endpoint):
               threds=run_threads,
               timeouted=run_timeout_number,
               data_read=data_read,
-              requests_per_second=run_req_sec)
+              requests_per_second=run_req_sec,
+              latency=run_latency)
 
     print('Exiting...')
     t.join(RUN_TIME + 60)
