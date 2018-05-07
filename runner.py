@@ -9,10 +9,10 @@ from string import Template
 import pexpect
 
 
-RUN_TIME = 300  # in seconds
-SAMPLE_NUM = 5  # time to do measurement during the period of run
-SQL_SLEEP_MAX = 3  # SQL query sleep time seconds
-LOOP_COUNT = 1000  # Iterate times creating objects to push some CPU/Mem load
+RUN_TIME = 1 * 60  # in seconds
+SAMPLE_NUM = 5     # time to do measurement during the period of run
+SQL_SLEEP_MAX = 2  # SQL query sleep time seconds
+LOOP_COUNT = 100   # Iterate times creating objects to push some CPU/Mem load
 THREADS = 12       # threads number for wrk run
 CONNECTIONS = 400  # connections number for wrk run
 
@@ -21,7 +21,7 @@ PROMPT = 'vagrant@servobench'
 CMDS = {
     'free-mem': "free | awk '/Mem/{print \"___\"$3 + 0\"___\"}'",
     'cpu-usage': "top -bn3 | grep Cpu\(s\) | awk 'NR == 3 { print \"___\"$2 + $4\"___\"}'",  # get us + sys
-    'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s',
+    'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s -s wrk_report.lua',
     'cd-framework': 'cd /shared/%s',
     'docker-run': '../mule.sh -rk -s %d -l %d' % (SQL_SLEEP_MAX, LOOP_COUNT)
 }
@@ -36,19 +36,20 @@ REPORT_TEMPLATE = """
 Date: $current_time
 Results:
 
-| Param                 | Value |
-| :---                  | :--- |
-| Framework             | $framework |
-| Endpoint              | /$endpoint  |
-| Test run time         | $time  |
-| N connections         | $connections  |
-| N threads             | $threds  |
-| N timeout-ed          | $timeouted  |
-| Data read             | $data_read  |
-| Requests/sec          | $requests_per_second |
-| Latency               | $latency |
-| Memory used, Mb       | $mem_used |
-| CPU used, %           | $cpu_used |
+| Param                           | Value |
+| :---                            | :--- |
+| Framework                       | $framework |
+| Endpoint                        | /$endpoint  |
+| Test run time                   | $time  |
+| N connections                   | $connections  |
+| N threads                       | $threds  |
+| N timeout-ed                    | $timeouted  |
+| Data read                       | $data_read  |
+| Requests/sec                    | $requests_per_second |
+| Req. Latency (Avg.)             | $latency |
+| Memory occupied before run, Mb  | $mem_before_run |
+| Memory used, Mb                 | $mem_used |
+| CPU used, %                     | $cpu_used |
 ==========================
 """
 
@@ -114,6 +115,7 @@ def do_report(cpu_samples, mem_samples, **kwargs):
     print('Memory used, mb: ', mem_used)
     print('CPU used, %: ', cpu_used)
     print('Doing report to file...')
+    kwargs['mem_before_run'] = int(mem_before / 1000)
     kwargs['cpu_used'] = cpu_used
     kwargs['mem_used'] = mem_used
     kwargs['current_time'] = time.ctime()
@@ -195,9 +197,9 @@ def run(s, framework, endpoint):
     run_timeout_number = int(m.group(1).strip()) if m else 'unknown'
     m = re.search(', (.+?) read', res)
     data_read = m.group(1).strip() if m else 'unknown'
-    m = re.search('Requests/sec:\W*([.*\d+])', res)
+    m = re.search('Requests/sec:\W*([\.\d]+)', res)
     run_req_sec = m.group(1).strip() if m else 'unknown'
-    m = re.search('Latency\W*([.*\w*\d+])', res)
+    m = re.search('Latency\W*([\.\w]+)', res)
     run_latency = m.group(1).strip() if m else 'unknown'
 
     print('Reporting resource measurements during benchmark...')

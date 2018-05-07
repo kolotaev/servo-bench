@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :virtualbox do |v|
     v.name = vm_name
-    v.memory = 512
+    v.memory = 1024
     v.cpus = 1
     v.customize ["modifyvm", :id, "--ioapic", "on"]
     # v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]

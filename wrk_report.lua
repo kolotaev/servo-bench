@@ -3,8 +3,9 @@
 
 done = function(summary, latency, requests)
     io.write("------------------------------\n")
-    for _, p in pairs({ 50, 90, 99, 99.999 }) do
+    for _, p in pairs({ 50, 90, 99, 100 }) do
         n = latency:percentile(p)
-        io.write(string.format("%g%%,%d\n", p, n))
+        io.write(string.format("Latency of %g%%, %.03f (sec.)\n", p, n / 1000000))
     end
+    io.write("------------------------------\n")
 end
