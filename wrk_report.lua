@@ -1,5 +1,5 @@
 -- example reporting script which demonstrates a custom
--- done() function that prints latency percentiles as CSV
+-- done() function that prints latency percentiles
 
 done = function(summary, latency, requests)
     io.write("------------------------------\n")
