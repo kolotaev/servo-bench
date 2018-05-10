@@ -74,3 +74,6 @@ runner-results*
 
 # For clojure leiningen
 target/
+
+# For Scala PlayFramework
+project/
