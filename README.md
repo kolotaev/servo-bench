@@ -41,9 +41,15 @@ Using Gunicorn as a web-server. 4 workers. Worker type - async: eventlet
 ### Clojure. Ring. Jetty.
 
 - [Ring](https://github.com/ring-clojure/ring)
-- [Jetty](https://www.eclipse.org/jetty/)
+- [Jetty](https://www.eclipse.org/jetty)
 
 Jetty with all default settings.
+
+
+### Scala. Play. Akka.
+
+- [Play](https://www.playframework.com)
+- [Akka](https://akka.io)
 
 
 

@@ -76,4 +76,5 @@ runner-results*
 target/
 
 # For Scala PlayFramework
-project/
+project/project/
+project/target/
