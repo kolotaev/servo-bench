@@ -7,6 +7,7 @@
   - [JS. Express.](#js-express)
   - [Python. Flask.](#python-flask)
   - [Clojure. Ring. Jetty.](#clojure-ring-jetty)
+  - [Scala. Play. Akka.](#scala-play-akka)
 - [Mule script](#mule-script)
 - [Runner script](#runner-script)
 - [Results](#results)
