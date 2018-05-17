@@ -3,6 +3,6 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-GET     /                           controllers.HomeController.index
-GET     /json                       controllers.HomeController.json
-GET     /db                         controllers.HomeController.db
+GET     /                  controllers.MainController.index
+GET     /json              controllers.MainController.json
+GET     /db                controllers.MainController.db

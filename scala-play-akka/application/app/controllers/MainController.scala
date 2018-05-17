@@ -1,6 +1,8 @@
 package controllers
 
 import javax.inject._
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
@@ -10,7 +12,8 @@ import repositories._
 
 
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class MainController @Inject()(cc: ControllerComponents, repository: PersonRepository)
+  extends AbstractController(cc) {
 
   def index() = Action { implicit request =>
      Ok(views.html.index())
@@ -22,9 +25,9 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
   }
 
   def db() = Action.async { implicit request =>
-    repository.getTodo(id) map {
-      case Some(todo) => Ok(Json.toJson(TodoView.fromModel(todo)))
-      case None => NotFound
+    repository.getAll(2) map {
+      case _ => Ok(Json.toJson(Map("AL" -> "Alabama", "AK" -> "Alaska")))
+//      case None => NotFound
     }
   }
 }
