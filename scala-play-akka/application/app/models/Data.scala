@@ -36,3 +36,15 @@ object Person {
     )
   }
 }
+
+case class Result(query: String, loop: Long, data: Seq[Person])
+
+object Result {
+  implicit val personWrites = new Writes[Result] {
+    def writes(r: Result) = Json.obj(
+      "query" -> r.query,
+      "loop-count" -> r.loop,
+      "data"  -> r.data
+    )
+  }
+}

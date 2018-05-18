@@ -2,18 +2,22 @@ package controllers
 
 import javax.inject._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Random, Properties}
 
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
 
-import models._
-import repositories._
+import models.{Person, Result}
+import repositories.{PersonRepository}
 
 
 @Singleton
 class MainController @Inject()(cc: ControllerComponents, repository: PersonRepository)
   extends AbstractController(cc) {
+
+  val sqlMaxSleep = Properties.envOrElse("SQL_SLEEP_MAX", "0").toInt // seconds
+  val loopCount = Properties.envOrElse("LOOP_COUNT", "0").toInt
 
   def index() = Action { implicit request =>
      Ok(views.html.index())
@@ -25,9 +29,13 @@ class MainController @Inject()(cc: ControllerComponents, repository: PersonRepos
   }
 
   def db() = Action.async { implicit request =>
-    repository.getAll(2) map {
-      case _ => Ok(Json.toJson(Map("AL" -> "Alabama", "AK" -> "Alaska")))
-//      case None => NotFound
+    val sleep = Random.nextDouble * sqlMaxSleep
+    val qry = s"SELECT pg_sleep($sleep)"
+    repository.doQuery(qry) map {
+      case _ => {
+        val persons = for (i <- 0 to loopCount) yield Person(true)
+        Ok(Json.toJson(new Result(qry, loopCount, persons)))
+      }
     }
   }
 }

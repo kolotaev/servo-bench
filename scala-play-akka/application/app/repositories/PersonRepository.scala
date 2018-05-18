@@ -18,12 +18,12 @@ class PersonRepository @Inject()(db: Database) {
   implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(250))
 
   val personParser = float("pg_sleep") map {
-    case _ => Person()
+    case _ => true
   }
 
   def withDb[T](body: Connection => T): Future[T] = Future(db.withConnection(body(_)))
 
-  def getAll(sleepTime: Double) = withDb { implicit conn =>
-    SQL("SELECT pg_sleep({time})").on("time" -> sleepTime).as(personParser.*)
+  def doQuery(query: String) = withDb { implicit conn =>
+    val result: Boolean = SQL(query).execute()
   }
 }
