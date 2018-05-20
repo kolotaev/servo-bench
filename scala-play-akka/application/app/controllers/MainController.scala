@@ -33,7 +33,9 @@ class MainController @Inject()(cc: ControllerComponents, repository: PersonRepos
     val qry = s"SELECT pg_sleep($sleep)"
     repository.doQuery(qry) map {
       case _ => {
+        // Create some CPU and RAM load
         val persons = for (_ <- 0 until loopCount) yield Person(true)
+
         Ok(Json.toJson(new Result(qry, loopCount, persons)))
       }
     }
