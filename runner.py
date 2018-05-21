@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import sys
 import threading
 import itertools
 from contextlib import contextmanager
@@ -9,7 +10,7 @@ from string import Template
 import pexpect
 
 
-RUN_TIME = 1 * 60  # in seconds
+RUN_TIME = (int(sys.argv[1]) if len(sys.argv) == 2 else 1) * 60  # in seconds
 SAMPLE_NUM = 5     # time to do measurement during the period of run
 SQL_SLEEP_MAX = 2  # SQL query sleep time seconds
 LOOP_COUNT = 100   # Iterate times creating objects to push some CPU/Mem load
@@ -40,16 +41,16 @@ Results:
 | :---                            | :--- |
 | Framework                       | $framework |
 | Endpoint                        | /$endpoint  |
+| Requests/sec                    | $requests_per_second |
+| Req. Latency (Avg.)             | $latency |
+| Memory used, Mb                 | $mem_used |
+| CPU used, %                     | $cpu_used |
 | Test run time                   | $time  |
 | N connections                   | $connections  |
 | N threads                       | $threds  |
 | N timeout-ed                    | $timeouted  |
 | Data read                       | $data_read  |
-| Requests/sec                    | $requests_per_second |
-| Req. Latency (Avg.)             | $latency |
 | Memory occupied before run, Mb  | $mem_before_run |
-| Memory used, Mb                 | $mem_used |
-| CPU used, %                     | $cpu_used |
 ==========================
 """
 
@@ -222,7 +223,7 @@ def run(s, framework, endpoint):
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
     suits = ask_suites()
-    with vagrant() as ssh:
-        for f, e in suits:
+    for f, e in suits:
+        with vagrant() as ssh:
             run(ssh, f, e)
             time.sleep(60)
