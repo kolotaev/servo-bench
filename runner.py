@@ -45,6 +45,8 @@ Results:
 | Req. Latency (Avg.)             | $latency |
 | Memory used, Mb                 | $mem_used |
 | CPU used, %                     | $cpu_used |
+| Memory used samples, kb         | $mem_samples |
+| CPU used samples, %             | $cpu_samples |
 | Test run time                   | $time  |
 | N connections                   | $connections  |
 | N threads                       | $threds  |
@@ -119,6 +121,8 @@ def do_report(cpu_samples, mem_samples, **kwargs):
     kwargs['mem_before_run'] = int(mem_before / 1000)
     kwargs['cpu_used'] = cpu_used
     kwargs['mem_used'] = mem_used
+    kwargs['mem_samples'] = mem_samples
+    kwargs['cpu_samples'] = cpu_samples
     kwargs['current_time'] = time.ctime()
     report = Template(REPORT_TEMPLATE).substitute(kwargs)
     with open(REPORT_FILE, "a") as f:
