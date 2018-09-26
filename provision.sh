@@ -4,7 +4,7 @@
 apt-get update
 
 # Install curl
-apt-get install curl -y
+apt-get install curl software-properties-common -y
 
 # Install python3
 apt-get install python3 -y

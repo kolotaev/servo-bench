@@ -44,7 +44,6 @@ Results:
 | Requests/sec                    | $requests_per_second |
 | Req. Latency (Avg.)             | $latency |
 | Memory used, Mb                 | $mem_used |
-| CPU used, %                     | $cpu_used |
 | Memory used samples, kb         | $mem_samples |
 | CPU used samples, %             | $cpu_samples |
 | Test run time                   | $time  |
