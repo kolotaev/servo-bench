@@ -5,8 +5,8 @@ import random
 import string
 
 from aiohttp import web
-import peewee
-import peewee_async
+import uvloop
+import asyncpg
 
 
 HOST = '0.0.0.0'
@@ -14,15 +14,7 @@ PORT = 8080
 SLEEP_MAX = int(os.environ.get('SQL_SLEEP_MAX', 0))
 LOOP_COUNT = int(os.environ.get('LOOP_COUNT', 0))
 
-dsn = 'dbname=postgres user=postgres password=root host=127.0.0.1'
-database = peewee_async.PooledPostgresqlDatabase('postgres', max_connections=250, dsn=dsn)
-
-
-class Model(peewee.Model):
-    content = peewee.CharField(max_length=512)
-
-    class Meta:
-        database = database
+DSN = 'postgres://postgres:root@127.0.0.1:5432/postgres'
 
 
 def random_string(max_len):
@@ -57,29 +49,38 @@ class User:
         self.friend = kwargs.get('friend', None)
 
 
-@asyncio.coroutine
-def json(_):
+async def json(_):
     user = create_user()
     return web.Response(text=jsonify(user), content_type='application/json')
 
 
-@asyncio.coroutine
-def db(_):
-    qry = 'SELECT pg_sleep(%f)' % random.uniform(0, SLEEP_MAX)
-    items = yield from peewee_async.execute(Model.raw(qry))
-    list(items)
-    users = []
-    for i in range(LOOP_COUNT):
-        user = create_user()
-        users.append(user)
-    return web.Response(
-        text=jsonify(jsonify({'db-query': qry, 'data': users})),
-        content_type='application/json')
+async def db(request):
+    pool = request.app['pool']
+
+    async with pool.acquire() as connection:
+        async with connection.transaction():
+            qry = 'SELECT pg_sleep(%f)' % random.uniform(0, SLEEP_MAX)
+            result = await connection.fetchval(qry)
+            users = []
+            for i in range(LOOP_COUNT):
+                user = create_user()
+                users.append(user)
+            return web.Response(
+                text=jsonify(jsonify({'db-query': qry, 'data': users, 'result': result})),
+                content_type='application/json')
 
 
-app = web.Application()
-app.router.add_route('GET', '/json', json)
-app.router.add_route('GET', '/db', db)
+async def init_app():
+    """Initialize the application server."""
+    web_app = web.Application()
+    web_app['pool'] = await asyncpg.create_pool(dsn=DSN, max_size=250)
+    web_app.router.add_route('GET', '/json', json)
+    web_app.router.add_route('GET', '/db', db)
+    return web_app
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(database.connect_async(loop=loop))
+
+if __name__ == '__main__':
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    loop = asyncio.get_event_loop()
+    app = loop.run_until_complete(init_app())
+    web.run_app(app, port=PORT)

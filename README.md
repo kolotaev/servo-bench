@@ -6,6 +6,7 @@
   - [Go. Echo.](#go-echo)
   - [JS. Express.](#js-express)
   - [Python. Flask.](#python-flask)
+  - [Python. Aiohttp. UVloop](#python-aiohttp)
   - [Clojure. Ring. Jetty.](#clojure-ring-jetty)
   - [Scala. Play. Akka.](#scala-play-akka)
 - [Mule script](#mule-script)
@@ -37,6 +38,13 @@ Logging enabled? - false
 - [Eventlet](http://eventlet.net)
 
 Using Gunicorn as a web-server. 4 workers. Worker type - async: eventlet
+
+
+### Python. Aiohttp. UVloop.
+
+- [Aiohttp](https://aiohttp.readthedocs.io/en/stable/index.html)
+- [uvloop](https://github.com/MagicStack/uvloop)
+- [acyncpg](https://magicstack.github.io/asyncpg)
 
 
 ### Clojure. Ring. Jetty.
