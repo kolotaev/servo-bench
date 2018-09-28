@@ -52,6 +52,7 @@ Results:
 | N timeout-ed                    | $timeouted  |
 | Data read                       | $data_read  |
 | Memory occupied before run, Mb  | $mem_before_run |
+| Non 2xx or 3xx responses        | $bad_responses |
 ==========================
 """
 
@@ -106,7 +107,7 @@ def ask_suites():
 def do_report(cpu_samples, mem_samples, **kwargs):
     consumed_mem = lambda x, y: round(((sum(x) / len(x) - y) / 1000), 1)
     consumed_cpu = lambda x, y: round((sum(x) / len(x) - y), 1)
-    mem_samples = list(map(int, mem_samples))
+    mem_samples = list(map(lambda x: int(x/1000), mem_samples))
     cpu_samples = list(map(float, cpu_samples))
     print('Memory: ', mem_samples)
     print('CPU: ', cpu_samples)
@@ -205,6 +206,8 @@ def run(s, framework, endpoint):
     run_req_sec = m.group(1).strip() if m else 'unknown'
     m = re.search('Latency\W*([\.\w]+)', res)
     run_latency = m.group(1).strip() if m else 'unknown'
+    m = re.search('Non-2xx or 3xx responses:\W*([\.\d]+)', res)
+    bad_resps = m.group(1).strip() if m else '0'
 
     print('Reporting resource measurements during benchmark...')
     do_report(cpu_samples=cpu_samples,
@@ -217,7 +220,8 @@ def run(s, framework, endpoint):
               timeouted=run_timeout_number,
               data_read=data_read,
               requests_per_second=run_req_sec,
-              latency=run_latency)
+              latency=run_latency,
+              bad_responses=bad_resps)
 
     print('Exiting...')
     t.join(RUN_TIME + 60)
