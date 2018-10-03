@@ -51,7 +51,7 @@
   (create-user))
 
 (defn db-endpoint []
-  (let [q      (select-query)
+  (let [q     (select-query)
         users (atom ())]
     (sql/query db [q])
     (dotimes [_ LOOP-COUNT]

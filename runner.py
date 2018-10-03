@@ -43,16 +43,15 @@ Results:
 | Endpoint                        | /$endpoint  |
 | Requests/sec                    | $requests_per_second |
 | Req. Latency (Avg.)             | $latency |
+| 5xx/4xx responses               | $bad_responses |
+| N timeout-ed                    | $timeouted  |
 | Memory used, Mb                 | $mem_used |
-| Memory used samples, kb         | $mem_samples |
+| Memory occupied before run, Mb  | $mem_before_run |
 | CPU used samples, %             | $cpu_samples |
 | Test run time                   | $time  |
 | N connections                   | $connections  |
 | N threads                       | $threds  |
-| N timeout-ed                    | $timeouted  |
 | Data read                       | $data_read  |
-| Memory occupied before run, Mb  | $mem_before_run |
-| Non 2xx or 3xx responses        | $bad_responses |
 ==========================
 """
 
@@ -107,7 +106,7 @@ def ask_suites():
 def do_report(cpu_samples, mem_samples, **kwargs):
     consumed_mem = lambda x, y: round(((sum(x) / len(x) - y) / 1000), 1)
     consumed_cpu = lambda x, y: round((sum(x) / len(x) - y), 1)
-    mem_samples = list(map(lambda x: int(x/1000), mem_samples))
+    mem_samples = list(map(lambda x: int(x), mem_samples))
     cpu_samples = list(map(float, cpu_samples))
     print('Memory: ', mem_samples)
     print('CPU: ', cpu_samples)

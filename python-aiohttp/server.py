@@ -49,38 +49,41 @@ class User:
         self.friend = kwargs.get('friend', None)
 
 
+async def setup_db(loop):
+    return await asyncpg.create_pool(DSN, loop=loop, max_size=250)
+
+
+async def startup(app):
+    app['db'] = await setup_db(app.loop)
+
+
+async def cleanup(app):
+    await app['db'].close()
+
+
 async def json(_):
     user = create_user()
     return web.Response(text=jsonify(user), content_type='application/json')
 
 
 async def db(request):
-    pool = request.app['pool']
-
-    async with pool.acquire() as connection:
-        async with connection.transaction():
-            qry = 'SELECT pg_sleep(%f)' % random.uniform(0, SLEEP_MAX)
-            result = await connection.fetchval(qry)
-            users = []
-            for i in range(LOOP_COUNT):
-                user = create_user()
-                users.append(user)
-            return web.Response(
-                text=jsonify(jsonify({'db-query': qry, 'data': users, 'result': result})),
-                content_type='application/json')
-
-
-async def init_app():
-    """Initialize the application server."""
-    web_app = web.Application()
-    web_app['pool'] = await asyncpg.create_pool(dsn=DSN, max_size=250)
-    web_app.router.add_route('GET', '/json', json)
-    web_app.router.add_route('GET', '/db', db)
-    return web_app
+    qry = 'SELECT pg_sleep(%f)' % random.uniform(0, SLEEP_MAX)
+    async with request.app['db'].acquire() as conn:
+        result = await conn.fetchval(qry)
+    users = []
+    for i in range(LOOP_COUNT):
+        user = create_user()
+        users.append(user)
+    return web.Response(
+        text=jsonify({'db-query': qry, 'data': users, 'result': result}),
+        content_type='application/json')
 
 
 if __name__ == '__main__':
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    loop = asyncio.get_event_loop()
-    app = loop.run_until_complete(init_app())
-    web.run_app(app, port=PORT)
+    web_app = web.Application()
+    web_app.on_startup.append(startup)
+    web_app.on_cleanup.append(cleanup)
+    web_app.router.add_route('GET', '/json', json)
+    web_app.router.add_route('GET', '/db', db)
+    web.run_app(web_app, port=PORT, access_log=None)
