@@ -46,6 +46,8 @@ Using Gunicorn as a web-server. 4 workers. Worker type - async: eventlet
 - [uvloop](https://github.com/MagicStack/uvloop)
 - [acyncpg](https://magicstack.github.io/asyncpg)
 
+Strange, but UVloop gives no benefits for `db/` endpoint.
+
 
 ### Clojure. Ring. Jetty.
 

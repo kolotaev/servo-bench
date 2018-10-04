@@ -47,6 +47,7 @@ Results:
 | N timeout-ed                    | $timeouted  |
 | Memory used, Mb                 | $mem_used |
 | Memory occupied before run, Mb  | $mem_before_run |
+| Memory used samples, kb         | $mem_samples |
 | CPU used samples, %             | $cpu_samples |
 | Test run time                   | $time  |
 | N connections                   | $connections  |
@@ -120,7 +121,7 @@ def do_report(cpu_samples, mem_samples, **kwargs):
     kwargs['mem_before_run'] = int(mem_before / 1000)
     kwargs['cpu_used'] = cpu_used
     kwargs['mem_used'] = mem_used
-    kwargs['mem_samples'] = mem_samples
+    kwargs['mem_samples'] = list(map(lambda x: int(x / 1000), mem_samples))
     kwargs['cpu_samples'] = cpu_samples
     kwargs['current_time'] = time.ctime()
     report = Template(REPORT_TEMPLATE).substitute(kwargs)
