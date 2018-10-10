@@ -7,5 +7,8 @@ defmodule Serv.Router do
 
   scope "/", Serv do
     pipe_through :api
+
+    get "/json", ServController, :jsoned
+    get "/db", ServController, :db
   end
 end

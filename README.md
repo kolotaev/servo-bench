@@ -9,6 +9,7 @@
   - [Python. Aiohttp. UVloop](#python-aiohttp)
   - [Clojure. Ring. Jetty.](#clojure-ring-jetty)
   - [Scala. Play. Akka.](#scala-play-akka)
+  - [Elixir. Phoenix. OTP.](#elixir-phoenix-otp)
 - [Mule script](#mule-script)
 - [Runner script](#runner-script)
 - [Results](#results)
@@ -16,7 +17,7 @@
 
 ## Frameworks
 
-Every framework section has 2 (or 3) words: Language. Framework name. (Web server name.)
+Every framework section has 2 (or 3) words: Language. Framework name. (Web server name or networking library)
 
 ### Go. Echo.
 
@@ -62,6 +63,12 @@ Jetty with all default settings.
 - [Play](https://www.playframework.com)
 - [Akka](https://akka.io)
 
+
+### Elixir. Phoenix. OTP.
+
+- [Elixir](https://elixir-lang.org)
+- [Phoenix](https://phoenixframework.org)
+- [Erlang & OTP](https://www.erlang.org)
 
 
 ## Mule script
