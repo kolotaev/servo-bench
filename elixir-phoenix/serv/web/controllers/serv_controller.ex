@@ -16,11 +16,11 @@ defmodule Serv.ServController do
   end
 
   defp get_envs() do
-    sleep = System.get_env("SQL_SLEEP_MAX")
+    {sleep, _} = Integer.parse(System.get_env("SQL_SLEEP_MAX"))
     if is_nil(sleep) do
       sleep = 2
     end
-    loop = System.get_env("LOOP_COUNT")
+    {loop, _} = Integer.parse(System.get_env("LOOP_COUNT"))
     if is_nil(loop) do
       loop = 20
     end

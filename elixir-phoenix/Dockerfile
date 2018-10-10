@@ -1,21 +1,20 @@
 FROM elixir:1.6-alpine
 
-# install mix
-RUN mix local.hex --force
+ENV PORT=8080 MIX_ENV=prod
+EXPOSE 8080
 
-# configure work directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+# install hex and rebar
+RUN mix local.hex --force
+RUN mix local.rebar --force
 
 # copy source files
-COPY serv/* .
+COPY . /usr/src/app
+WORKDIR /usr/src/app/serv
 
 # install dependencies and compile
 RUN mix deps.get --only prod
-RUN MIX_ENV=prod mix compile
-# RUN mix phx.digest
-
-EXPOSE 8080
+RUN mix compile
+RUN mix phx.digest
 
 # launch server
-CMD ["PORT=8080", "MIX_ENV=prod", "mix", "phx.server"]
+CMD ["mix", "phx.server"]

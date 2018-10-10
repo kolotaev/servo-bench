@@ -3,12 +3,12 @@
 Dockerfile
 
 # Mix artifacts
-_build
-deps
-*.ez
+serv/_build
+serv/deps
+serv/*.ez
 
 # Generate on crash by the VM
-erl_crash.dump
+serv/erl_crash.dump
 
 # Static artifacts
-node_modules
+serv/node_modules
