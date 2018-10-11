@@ -1,6 +1,8 @@
 defmodule Serv.User do
   use Serv.Web, :model
 
+  @chars "ABCDEFGHIJKLMNOP" |> String.split("")
+
   def new_user(has_friend?) do
     friend = nil
     if has_friend? do
@@ -26,22 +28,17 @@ defmodule Serv.User do
     q
   end
   
-  defp random_string(n) do
-    alphabet =
-      ?a..?z
-      |> Enum.concat(?A..?Z)
-      |> Enum.concat(?0..?9)
-      |> to_string
-      |> String.codepoints
-    Enum.reduce((1..n), [], fn (_i, acc) -> [Enum.random(alphabet) | acc] end)
-      |> Enum.join()
+  defp random_string(length) do
+    # todo - why does it slow down performance so drastically?
+    # @chars |> Enum.shuffle |> Enum.take(length) |> to_string
+    "abcdef"
   end
   
   defp rand_float() do
-    :random.uniform()
+    :rand.uniform()
   end
 
   defp rand_int(n) do
-    Enum.random(0..n)
+    :rand.uniform(n)
   end
 end

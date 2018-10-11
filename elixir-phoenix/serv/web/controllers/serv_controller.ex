@@ -9,8 +9,8 @@ defmodule Serv.ServController do
   end
 
   def db(conn, _params) do
-    {sleep, loop} = get_envs
-    users = Enum.map(List.duplicate(:a, loop), fn x -> [Serv.User.new_user(true) | []] end)
+    {sleep, loop} = get_envs()
+    users = Enum.map(0..loop, fn _ -> Serv.User.new_user(true) end)
     q = Serv.User.run_heavy_query(sleep)
     render(conn, "db.json", data: %{query: q, users: users})
   end
@@ -18,11 +18,11 @@ defmodule Serv.ServController do
   defp get_envs() do
     {sleep, _} = Integer.parse(System.get_env("SQL_SLEEP_MAX"))
     if is_nil(sleep) do
-      sleep = 2
+      sleep = 0
     end
     {loop, _} = Integer.parse(System.get_env("LOOP_COUNT"))
     if is_nil(loop) do
-      loop = 20
+      loop = 0
     end
     {sleep, loop}
   end
