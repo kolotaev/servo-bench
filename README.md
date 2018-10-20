@@ -5,8 +5,8 @@
 - [Frameworks](#frameworks)
   - [Go. Echo.](#go-echo)
   - [JS. Express.](#js-express)
-  - [Python. Flask.](#python-flask)
-  - [Python. Aiohttp. UVloop](#python-aiohttp)
+  - [Python. Flask. Gevent.](#python-flask-gevent)
+  - [Python. Aiohttp. UVloop.](#python-aiohttp)
   - [Clojure. Ring. Jetty.](#clojure-ring-jetty)
   - [Scala. Play. Akka.](#scala-play-akka)
   - [Elixir. Phoenix. OTP.](#elixir-phoenix-otp)
@@ -32,13 +32,16 @@ Logging enabled? - false
 - [Express site](https://expressjs.com)
 
 
-### Python. Flask.
+### Python. Flask. Gevent
 
 - [Flask](http://flask.pocoo.org)
 - [Gunicorn](http://gunicorn.org/#docs)
-- [Eventlet](http://eventlet.net)
+- [Gevent](http://www.gevent.org)
 
-Using Gunicorn as a web-server. 4 workers. Worker type - async: eventlet
+With setup: 'Gunicorn as a web-server. 4 workers. Worker type - async: eventlet' server gives only 3-4 req/s
+which is very low.
+
+Tuned bare gevent is much better.
 
 
 ### Python. Aiohttp. UVloop.
@@ -73,7 +76,7 @@ Jetty with all default settings.
 
 ## Mule script
 
-`mule`is a script to help you build and run specific framework in a docker-container.
+`mule` is a script to help you build and run specific framework in a docker-container.
 
 Script can be run in 2 possible ways:
 

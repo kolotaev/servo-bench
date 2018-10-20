@@ -3,11 +3,18 @@ import sys
 import random
 import string
 import logging
-from contextlib import contextmanager
 
-import psycopg2.pool
+# Do all the monkey-patching
+import gevent
+from gevent import monkey
+monkey.patch_all()
+from psycogreen.gevent import patch_psycopg
+patch_psycopg()
+
 from flask import Flask, jsonify
 from flask.json import JSONEncoder
+
+import pgpool
 
 
 HOST = '0.0.0.0'
@@ -31,14 +38,8 @@ class MyJSONEncoder(JSONEncoder):
         return super().default(obj)
 
 
-@contextmanager
-def get_cursor():
-    global pool
-    con = pool.getconn()
-    try:
-        yield con.cursor()
-    finally:
-        pool.putconn(con)
+def db_execute(sql):
+    gevent.spawn(pool.execute, sql)
 
 
 class User:
@@ -63,7 +64,7 @@ app.logger.setLevel(logging.ERROR)
 app.logger.error('Using SQL_SLEEP_MAX = %i seconds; LOOP_COUNT = %i' % (SLEEP_MAX, LOOP_COUNT))
 try:
     dsn = 'dbname=postgres user=postgres password=root host=127.0.0.1 '
-    pool = psycopg2.pool.SimpleConnectionPool(1, 250, dsn=dsn)
+    pool = pgpool.PostgresConnectionPool(dsn=dsn, maxsize=380)
 except Exception as e:
     app.logger.error(e)
     sys.exit(e)
@@ -89,9 +90,7 @@ def json():
 @app.route('/db')
 def db():
     qry = 'SELECT pg_sleep(%f)' % random.uniform(0, SLEEP_MAX)
-    with get_cursor() as cur:
-        cur.execute(qry)
-        cur.fetchall()
+    db_execute(sql=qry)
     users = []
     for i in range(LOOP_COUNT):
         user = create_user()

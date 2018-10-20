@@ -15,4 +15,4 @@ COPY . .
 RUN pip install -r requirements.txt
 
 EXPOSE 8080
-CMD ["gunicorn", "--config", "gunicorn_config.py", "server:app"]
+CMD ["gunicorn", "-c", "gunicorn_config.py", "server:app"]
