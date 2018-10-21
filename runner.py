@@ -22,7 +22,7 @@ PROMPT = 'vagrant@servobench'
 CMDS = {
     'free-mem': "free | awk '/Mem/{print \"___\"$3 + 0\"___\"}'",
     'cpu-usage': "top -bn3 | grep Cpu\(s\) | awk 'NR == 3 { print \"___\"$2 + $4\"___\"}'",  # get us + sys
-    'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s -s wrk_report.lua',
+    'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s -s wrk_report.lua --timeout 10s',
     'cd-framework': 'cd /shared/%s',
     'docker-run': '../mule.sh -rk -s %d -l %d' % (SQL_SLEEP_MAX, LOOP_COUNT)
 }
@@ -43,6 +43,7 @@ Results:
 | Endpoint                        | /$endpoint  |
 | Requests/sec                    | $requests_per_second |
 | Req. Latency (Avg.)             | $latency |
+| Req. Latency (%'le - latency)   | $latency_percentiles |
 | 5xx/4xx responses               | $bad_responses |
 | N timeout-ed                    | $timeouted  |
 | Memory used, Mb                 | $mem_used |
@@ -205,7 +206,8 @@ def run(s, framework, endpoint):
     m = re.search('Requests/sec:\W*([\.\d]+)', res)
     run_req_sec = m.group(1).strip() if m else 'unknown'
     m = re.search('Latency\W*([\.\w]+)', res)
-    run_latency = m.group(1).strip() if m else 'unknown'
+    run_latency_avg = m.group(1).strip() if m else 'unknown'
+    run_latencies = re.findall('Latency percentile\W*([\.\d]+)%,\W*([\.\d]+)', res)
     m = re.search('Non-2xx or 3xx responses:\W*([\.\d]+)', res)
     bad_resps = m.group(1).strip() if m else '0'
 
@@ -220,7 +222,8 @@ def run(s, framework, endpoint):
               timeouted=run_timeout_number,
               data_read=data_read,
               requests_per_second=run_req_sec,
-              latency=run_latency,
+              latency=run_latency_avg,
+              latency_percentiles=run_latencies,
               bad_responses=bad_resps)
 
     print('Exiting...')
