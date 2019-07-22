@@ -48,11 +48,11 @@ Results:
 | N timeout-ed                    | $timeouted  |
 | Memory used, Mb                 | $mem_used |
 | Memory occupied before run, Mb  | $mem_before_run |
-| Memory used samples, kb         | $mem_samples |
+| Memory used samples, Mb         | $mem_samples |
 | CPU used samples, %             | $cpu_samples |
 | Test run time                   | $time  |
 | N connections                   | $connections  |
-| N threads                       | $threds  |
+| N threads                       | $threads  |
 | Data read                       | $data_read  |
 ==========================
 """
@@ -98,7 +98,7 @@ def selector(typ, proposed):
     return [proposed[i] for i in ids]
 
 
-def ask_suites():
+def ask_for_suites():
     dirs = [os.path.basename(root) for root, _, filenames in os.walk(os.getcwd())
             for filename in filenames if filename == 'Dockerfile']
     apis = ['json', 'db']
@@ -218,7 +218,7 @@ def run(s, framework, endpoint):
               endpoint=endpoint,
               time=run_time,
               connections=run_connections,
-              threds=run_threads,
+              threads=run_threads,
               timeouted=run_timeout_number,
               data_read=data_read,
               requests_per_second=run_req_sec,
@@ -232,7 +232,7 @@ def run(s, framework, endpoint):
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
-    suits = ask_suites()
+    suits = ask_for_suites()
     for f, e in suits:
         with vagrant() as ssh:
             run(ssh, f, e)
