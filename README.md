@@ -74,6 +74,20 @@ Jetty with all default settings.
 - [Erlang & OTP](https://www.erlang.org)
 
 
+### Elixir. Plug. OTP.
+
+- [Elixir](https://elixir-lang.org)
+- [Plug](https://github.com/elixir-plug/plug)
+- [Erlang & OTP](https://www.erlang.org)
+
+
+### Ruby. Sinatra. Synchrony.
+
+- [Ruby](https://www.ruby-lang.org)
+- [Sinatra](http://sinatrarb.com)
+- [Synchrony](https://github.com/kyledrake/sinatra-synchrony)
+
+
 ## Mule script
 
 `mule` is a script to help you build and run specific framework in a docker-container.
