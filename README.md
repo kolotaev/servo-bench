@@ -10,6 +10,8 @@
   - [Clojure. Ring. Jetty.](#clojure-ring-jetty)
   - [Scala. Play. Akka.](#scala-play-akka)
   - [Elixir. Phoenix. OTP.](#elixir-phoenix-otp)
+  - [Elixir. Plug. OTP.](#elixir-plug-otp)
+  - [Ruby. Sinatra. Synchrony.](#ruby-sinatra-synchrony)
 - [Mule script](#mule-script)
 - [Runner script](#runner-script)
 - [Results](#results)
