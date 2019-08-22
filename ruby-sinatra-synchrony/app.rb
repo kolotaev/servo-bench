@@ -6,7 +6,7 @@ class App < Sinatra::Base
   use Rack::JSONP
   before { content_type 'application/json' }
 
-  get '/' do
+  get '/json' do
     "hello async".to_json
   end
 
