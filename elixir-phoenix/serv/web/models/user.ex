@@ -27,13 +27,13 @@ defmodule Serv.User do
     Ecto.Adapters.SQL.query(Serv.Repo, q)
     q
   end
-  
+
   defp random_string(length) do
     # todo - why does it slow down performance so drastically?
     # @chars |> Enum.shuffle |> Enum.take(length) |> to_string
     "abcdef"
   end
-  
+
   defp rand_float() do
     :rand.uniform()
   end

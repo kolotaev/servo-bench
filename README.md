@@ -8,6 +8,7 @@
   - [Python. Flask. Gevent.](#python-flask-gevent)
   - [Python. Aiohttp. UVloop.](#python-aiohttp)
   - [Clojure. Ring. Jetty.](#clojure-ring-jetty)
+  - [Clojure. Http-kit. Http-kit-dbcp.](#clojure-http-kit)
   - [Scala. Play. Akka.](#scala-play-akka)
   - [Elixir. Phoenix. OTP.](#elixir-phoenix-otp)
   - [Elixir. Plug. OTP.](#elixir-plug-otp)
@@ -61,6 +62,14 @@ Strange, but UVloop gives no benefits for `db/` endpoint.
 - [Jetty](https://www.eclipse.org/jetty)
 
 Jetty with all default settings.
+
+
+### Clojure. Http-kit.
+
+- [Http-kit](https://github.com/http-kit/http-kit)
+- [Http-kit-dbcp](https://github.com/http-kit/dbcp.clj)
+
+Event-driven, high-performance clojure server/client library.
 
 
 ### Scala. Play. Akka.
