@@ -8,10 +8,10 @@
     (:gen-class))
 
 
-(def SLEEP-MAX
+(defonce SLEEP-MAX
   (Integer. (or (System/getenv "SQL_SLEEP_MAX") "0")))
 
-(def LOOP-COUNT
+(defonce LOOP-COUNT
   (Integer. (or (System/getenv "LOOP_COUNT") "0")))
 
 (def db
