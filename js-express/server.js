@@ -16,7 +16,7 @@ function randomString(len) {
 }
 
 function randomInt(max) {
-    return Math.floor(Math.random() * max) + 1; 
+    return Math.floor(Math.random() * max) + 1;
 }
 
 
@@ -55,7 +55,7 @@ const pool = new Pool({
   database: 'postgres',
   password: 'root',
   port: 5432,
-  max: 250, // number of connection
+  max: 250, // number of connections
 });
 
 // Routes
