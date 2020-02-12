@@ -3,6 +3,6 @@ source :rubygems
 gem 'thin'
 gem 'sinatra-synchrony'
 gem 'em-pg-client', require: %w'pg/em em-synchrony/pg'
-gem 'rack-contrib'
+gem 'rack-contrib', '~> 1'
 gem 'rspec'
 gem 'rack-test'
