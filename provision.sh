@@ -58,7 +58,6 @@ echo "*            soft nofile     40000" >> /etc/security/limits.conf
 
 sysctl -w net.ipv4.tcp_congestion_control=cubic
 
-
 # ?
 # https://stackoverflow.com/questions/9798705/arval-sqlexception-fatal-sorry-too-many-clients-already-in-postgres#14191857
 sysctl -w kernel.shmmax=134217728
