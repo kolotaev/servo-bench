@@ -9,17 +9,17 @@ apt-get install curl software-properties-common -y
 # Install python3
 apt-get install python3 -y
 
-# Install Postgres 9.4
-apt-get install postgresql-9.4 postgresql-client-9.4 -y
+# Install Postgres 9.6
+apt-get install postgresql-9.6 postgresql-client-9.6 -y
 
 
 # Configure Postgres
 sudo -u postgres psql -c "ALTER USER \"postgres\" WITH PASSWORD 'root';"
-mkdir -p /etc/postgresql/9.4/main/conf.d
-cp /shared/postgres_custom.conf /etc/postgresql/9.4/main/conf.d/00postgres_custom.conf
-echo "include_dir 'conf.d'" >> /etc/postgresql/9.4/main/postgresql.conf
-echo "host    all             all              0.0.0.0/0                       md5" >> /etc/postgresql/9.4/main/pg_hba.conf
-echo "host    all             all              ::/0                            md5" >> /etc/postgresql/9.4/main/pg_hba.conf
+mkdir -p /etc/postgresql/9.6/main/conf.d
+cp /shared/postgres_custom.conf /etc/postgresql/9.6/main/conf.d/00postgres_custom.conf
+echo "include_dir 'conf.d'" >> /etc/postgresql/9.6/main/postgresql.conf
+echo "host    all             all              0.0.0.0/0                       md5" >> /etc/postgresql/9.6/main/pg_hba.conf
+echo "host    all             all              ::/0                            md5" >> /etc/postgresql/9.6/main/pg_hba.conf
 
 
 # Install Docker
@@ -35,7 +35,7 @@ fi
 
 
 # Build all images
-cd /shared && ./mule.sh -x && cd -
+# cd /shared && ./mule.sh -x && cd -
 
 
 # Configure system for high load.
