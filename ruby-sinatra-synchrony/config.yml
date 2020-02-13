@@ -1,0 +1,8 @@
+---
+environment: production
+max_conns: 50000
+max_persistent_conns: 50000
+threaded: false  # important! otherwise EM crashes
+threadpool_size: 500000
+address: "0.0.0.0"
+port: 8080
