@@ -9,6 +9,14 @@ apt-get install curl software-properties-common -y
 # Install python3
 apt-get install python3 -y
 
+# Install pip for python2
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python get-pip.py
+
+
+# Install memory monioring utility
+python -m pip install ps_mem
+
 # Install Postgres 9.6
 apt-get install postgresql-9.6 postgresql-client-9.6 -y
 
