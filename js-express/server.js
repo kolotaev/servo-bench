@@ -55,7 +55,7 @@ const pool = new Pool({
   database: 'postgres',
   password: 'root',
   port: 5432,
-  max: 250, // number of connections
+  max: 400, // number of connections
 });
 
 // Routes
