@@ -8,8 +8,8 @@ RUN go get -u github.com/labstack/echo/... && go get github.com/lib/pq/...
 
 ADD . .
 
-RUN go build server.go
+RUN go build server.go && mv server go-echo-server
 
-ENTRYPOINT ./server
+ENTRYPOINT ./runner.sh
 
 EXPOSE 8080
