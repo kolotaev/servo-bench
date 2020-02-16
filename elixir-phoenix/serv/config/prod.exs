@@ -60,3 +60,10 @@ config :logger, level: :error
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
 import_config "prod.secret.exs"
+
+config :serv, Serv.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "root",
+  database: "postgres",
+  pool_size: 400

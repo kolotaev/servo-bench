@@ -1,4 +1,4 @@
-FROM elixir:1.6-alpine
+FROM elixir:1.10-alpine
 
 ENV PORT=8080 MIX_ENV=prod
 EXPOSE 8080
