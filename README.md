@@ -8,7 +8,7 @@
   - [Python. Flask. Gevent.](#python-flask-gevent)
   - [Python. Aiohttp. UVloop.](#python-aiohttp)
   - [Clojure. Ring. Jetty.](#clojure-ring-jetty)
-  - [Clojure. Http-kit. Http-kit-dbcp.](#clojure-http-kit)
+  - [Clojure. Http-kit. Postgres.async.](#clojure-http-kit)
   - [Scala. Play. Akka.](#scala-play-akka)
   - [Elixir. Phoenix. OTP.](#elixir-phoenix-otp)
   - [Elixir. Plug. OTP.](#elixir-plug-otp)
@@ -67,9 +67,10 @@ Jetty with all default settings.
 ### Clojure. Http-kit.
 
 - [Http-kit](https://github.com/http-kit/http-kit)
-- [Http-kit-dbcp](https://github.com/http-kit/dbcp.clj)
+- [Postgres.async](https://github.com/alaisi/postgres.async)
 
 Event-driven, high-performance clojure server/client library.
+With async PG driver.
 
 
 ### Scala. Play. Akka.
