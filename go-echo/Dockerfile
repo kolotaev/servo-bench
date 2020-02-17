@@ -12,4 +12,4 @@ RUN go build server.go && mv server go-echo-server
 
 ENTRYPOINT ./runner.sh
 
-EXPOSE 8080
+EXPOSE 8081

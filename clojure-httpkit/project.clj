@@ -6,7 +6,8 @@
                  [http-kit "2.3.0"]
                 ;  [http-kit/dbcp "0.1.0"]
                 ;  [postgresql/postgresql "8.4-702.jdbc4"]
-                 [alaisi/postgres.async "0.8.0"]
+                ;  [clj-http "3.10.0"]
+                ;  [alaisi/postgres.async "0.8.0"]
                  ]
   :main serv.core
 ;  :aot [serv.core]

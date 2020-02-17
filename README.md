@@ -5,6 +5,7 @@
 - [Frameworks](#frameworks)
   - [Go. Echo.](#go-echo)
   - [JS. Express.](#js-express)
+  - [Crystal. Kemal.](#crystal-kemal)
   - [Python. Flask. Gevent.](#python-flask-gevent)
   - [Python. Aiohttp. UVloop.](#python-aiohttp)
   - [Clojure. Ring. Jetty.](#clojure-ring-jetty)
@@ -33,6 +34,11 @@ Logging enabled? - false
 
 - [NodeJS site](nodejs.org)
 - [Express site](https://expressjs.com)
+
+
+### Crystal. Kemal.
+- [Crystal lang](https://crystal-lang.org)
+- [Kemal web framework](https://kemalcr.com)
 
 
 ### Python. Flask. Gevent

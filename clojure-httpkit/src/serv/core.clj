@@ -3,7 +3,10 @@
           org.httpkit.server)
     (:require [compojure.route :as route]
               [cheshire.core :as json]
-              [postgres.async :as adb])
+              ; [postgres.async :as adb]
+              [org.httpkit.client :as http]
+              ; [clj-http.client :as client]
+              )
     (:gen-class))
 
 
@@ -34,24 +37,41 @@
    :friend  (when-not no-friends?
                       (create-user true))})
 
+(defn rand-sleep-number []
+  (-> SLEEP-MAX (* 1000) rand-int (/ 1000) float))
+
 (defn select-query []
-  (str "SELECT pg_sleep(" (-> SLEEP-MAX (* 1000) rand-int (/ 1000) float) ")"))
+  (str "SELECT pg_sleep(" (rand-sleep-number) ")"))
 
 
-(def db (adb/open-db {:hostname "127.0.0.1"
-                  :port 5432 ; default
-                  :database "postgres"
-                  :username "postgres"
-                  :password "root"
-                  :pool-size 400}))
+; (def db (adb/open-db {:hostname "127.0.0.1"
+;                   :port 5432 ; default
+;                   :database "postgres"
+;                   :username "postgres"
+;                   :password "root"
+;                   :pool-size 400}))
+
+; (defn execute-db-workload [ch]
+;   (let [q     (select-query)
+;         users (atom ())]
+;     (adb/execute! db [q] (fn [res err]
+;                             ; (when err (println err))
+;                             (dotimes [_ LOOP-COUNT] (swap! users conj (create-user)))
+;                             (send! ch (json/encode {:users @users :query q :result res}))))))
+
 
 (defn execute-db-workload [ch]
-  (let [q     (select-query)
+  (let [q     (str "http://127.0.0.1:8081/pg?sleep=" (rand-sleep-number))
         users (atom ())]
-    (adb/execute! db [q] (fn [res err]
-                            ; (when err (println err))
-                            (dotimes [_ LOOP-COUNT] (swap! users conj (create-user)))
-                            (send! ch (json/encode {:users @users :query q :result res}))))))
+    (http/get q
+      (fn [{:keys [status headers body error]}]
+      ; (fn [resp]
+        ; (when err (println err))
+        (dotimes [_ LOOP-COUNT] (swap! users conj (create-user)))
+        (send! ch (json/encode {:users @users :query q :result body :status status})))
+      ; (fn [ex] (send! ch (.getMessage ex))
+      )
+        ))
 
 
 ; Endpoints
@@ -77,4 +97,6 @@
 
 (defn -main []
   (println (str "Running. SQL_SLEEP_MAX = " SLEEP-MAX " seconds; LOOP_COUNT = " LOOP-COUNT))
-  (run-server main-routes {:port 8080}))
+  (run-server main-routes {:port 8080
+                           :queue-size 50000
+                           :thread 300}))

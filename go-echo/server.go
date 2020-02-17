@@ -1,14 +1,14 @@
 package main
 
 import (
-	"net/http"
+	"database/sql"
+	"fmt"
+	"log"
 	"math/rand"
-	"time"
+	"net/http"
 	"os"
 	"strconv"
-	"database/sql"
-	"log"
-	"fmt"
+	"time"
 
 	"github.com/labstack/echo"
 	_ "github.com/lib/pq"
@@ -18,21 +18,21 @@ const SLEEP_MAX_DEFAULT = 0 // seconds
 const LOOP_COUNT_DEFAULT = 0
 
 type User struct {
-	ID string `json:"id"`
-	Name  string `json:"name"`
-	Surname string `json:"surname"`
-	Street string `json:"street"`
-	School string `json:"school"`
-	Bank string `json:"bank"`
-	A int `json:"a"`
-	B float64 `json:"b"`
-	C int `json:"c"`
-	Friend *User `json:"friend"`
+	ID      string  `json:"id"`
+	Name    string  `json:"name"`
+	Surname string  `json:"surname"`
+	Street  string  `json:"street"`
+	School  string  `json:"school"`
+	Bank    string  `json:"bank"`
+	A       int     `json:"a"`
+	B       float64 `json:"b"`
+	C       int     `json:"c"`
+	Friend  *User   `json:"friend"`
 }
 
 func randomString(l int) string {
 	randomInt := func(min int, max int) int {
-		return min + rand.Intn(max - min)
+		return min + rand.Intn(max-min)
 	}
 	bytes := make([]byte, l)
 	for i := 0; i < l; i++ {
@@ -43,28 +43,28 @@ func randomString(l int) string {
 
 func createUser() *User {
 	friend := &User{
-		ID: randomString(34),
-			Name: randomString(10),
-			Surname: randomString(3),
-			Street: randomString(15),
-			School: randomString(9),
-			Bank: randomString(4),
-			A: rand.Intn(100),
-			B: rand.Float64(),
-			C: rand.Intn(1090),
-			Friend: nil,
+		ID:      randomString(34),
+		Name:    randomString(10),
+		Surname: randomString(3),
+		Street:  randomString(15),
+		School:  randomString(9),
+		Bank:    randomString(4),
+		A:       rand.Intn(100),
+		B:       rand.Float64(),
+		C:       rand.Intn(1090),
+		Friend:  nil,
 	}
 	return &User{
-		ID: randomString(34),
-			Name: randomString(10),
-			Surname: randomString(3),
-			Street: randomString(15),
-			School: randomString(9),
-			Bank: randomString(4),
-			A: rand.Intn(100),
-			B: rand.Float64(),
-			C: rand.Intn(1090),
-			Friend: friend,
+		ID:      randomString(34),
+		Name:    randomString(10),
+		Surname: randomString(3),
+		Street:  randomString(15),
+		School:  randomString(9),
+		Bank:    randomString(4),
+		A:       rand.Intn(100),
+		B:       rand.Float64(),
+		C:       rand.Intn(1090),
+		Friend:  friend,
 	}
 }
 
@@ -103,10 +103,25 @@ func main() {
 	}
 
 	e := echo.New()
-	
+
 	e.GET("/json", func(c echo.Context) error {
 		user := createUser()
 		return c.JSON(http.StatusOK, &user)
+	})
+
+	e.GET("/pg", func(c echo.Context) error {
+        seconds, err := strconv.ParseFloat(c.QueryParam("sleep"), 64)
+        if err != nil {
+            log.Fatal(err)
+		}
+        var result string
+        var result2 float64
+		row := db.QueryRow(fmt.Sprintf("SELECT pg_sleep(%f), %f", seconds, seconds))
+        err = row.Scan(&result, &result2)
+        if err != nil {
+            log.Fatal(err)
+		}
+		return c.JSON(http.StatusOK, result2)
 	})
 
 	e.GET("/db", func(c echo.Context) error {
@@ -132,5 +147,5 @@ func main() {
 
 		return c.JSON(http.StatusOK, result)
 	})
-	e.Start(":8080")
+	e.Start(":8081")
 }
