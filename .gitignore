@@ -79,3 +79,7 @@ target/
 # For Scala PlayFramework
 project/project/
 project/target/
+
+# For kemal
+crystal-kemal/lib/
+crystal-kemal/server
