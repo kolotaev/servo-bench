@@ -82,4 +82,5 @@ project/target/
 
 # For kemal
 crystal-kemal/lib/
+crystal-kemal/bin
 crystal-kemal/server
