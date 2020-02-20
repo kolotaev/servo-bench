@@ -1,6 +1,12 @@
 require "json"
 
 require "kemal"
+require "pg"
+
+
+SLEEP_MAX = (ENV["SQL_SLEEP_MAX"]? || 0).to_f
+LOOP_COUNT = (ENV["LOOP_COUNT"]? || 0).to_i
+APPDB = DB.open("postgres://postgres:root@127.0.0.1:5432/postgres")
 
 
 def random_string(length)
@@ -50,7 +56,15 @@ get "/json" do
 end
 
 get "/db" do
-  "i'm db"
+  sleep_time = SLEEP_MAX > 0 ? rand(SLEEP_MAX) : 0
+  qry = "SELECT 1, pg_sleep(#{sleep_time})"
+  result, sl = APPDB.query_one qry, as: {Int, Slice(UInt8)}
+  users = [] of User
+  LOOP_COUNT.times do
+    users << create_user
+  end
+  { :db_query => qry, :data => users, :result => result }.to_json
 end
 
+Kemal.config.logging = false
 Kemal.run
