@@ -1,8 +1,16 @@
+require "json"
+
 require "kemal"
 
 
 def random_string(length)
-  rand(36**length).to_s(36)
+  "q-w-e-r-t-y-u-i-o-p-1-2-3-4-5-6-7-8-9-0-a-s-d-f-g-h-j-k-l".split("-").sample(length).join()
+end
+
+def create_user
+  user = User.new
+  user.friend = User.new
+  user
 end
 
 class User
@@ -16,18 +24,33 @@ class User
     @b = opts.fetch(:b, rand)
     @friend = opts.fetch(:friend, nil)
   end
+
+  JSON.mapping(
+    name: String,
+    surname: String,
+    street: String,
+    school: String,
+    bank: String,
+    a: Int32,
+    b: Float64,
+    friend: (User | Nil),
+  )
 end
 
 get "/" do
   "
-  <html>It's me, Express App.<br/>
+  <html>It's me, Kemal App.<br/>
   Use routes:<br/><a href='./json'>json</a><br/>
   <a href='./db'>db</a></html>
   "
 end
 
 get "/json" do
-  random_string 5
+  create_user.to_json
+end
+
+get "/db" do
+  "i'm db"
 end
 
 Kemal.run

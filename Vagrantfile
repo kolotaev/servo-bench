@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", path: "provision.sh", privileged: true
 
   config.vm.hostname = vm_name
-  config.vm.network "public_network", type: "dhcp", :bridge => 'en0' # rarely it's needed when docker can't pull images
+  # config.vm.network "public_network", type: "dhcp", :bridge => 'en0' # rarely it's needed when docker can't pull images
   config.vm.network :forwarded_port, guest: 8080, host: 8080
   config.vm.network :forwarded_port, guest: 8081, host: 8081
   config.vm.network :forwarded_port, guest: 5432, host: 54320
