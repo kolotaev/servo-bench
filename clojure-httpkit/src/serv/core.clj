@@ -3,12 +3,12 @@
           org.httpkit.server)
     (:require [compojure.route :as route]
               [cheshire.core :as json]
-              ; [postgres.async :as adb]
-              [org.httpkit.client :as http]
-              ; [clj-http.client :as client]
-              )
+              [postgres.async :as adb]
+              [org.httpkit.client :as http])
     (:gen-class))
 
+
+; Constants
 
 (defonce SLEEP-MAX
   (Integer. (or (System/getenv "SQL_SLEEP_MAX") "0")))
@@ -18,13 +18,13 @@
 
 
 ; Helpers
-(defn rand-string
+(defn- rand-string
   ([n]
    (let [chars  (map char (range 65 90))
          genned (take n (repeatedly #(rand-nth chars)))]
      (reduce str genned))))
 
-(defn create-user
+(defn- create-user
   [& [no-friends?]]
   {:name    (rand-string 10)
    :surname (rand-string 3)
@@ -37,44 +37,46 @@
    :friend  (when-not no-friends?
                       (create-user true))})
 
-(defn rand-sleep-number []
+(defn- generate-users []
+  (let [users (atom ())]
+    (dotimes [_ LOOP-COUNT] (swap! users conj (create-user)))
+    @users))
+
+(defn- rand-sleep-number []
   (-> SLEEP-MAX (* 1000) rand-int (/ 1000) float))
 
-(defn select-query []
+(defn- select-query []
   (str "SELECT pg_sleep(" (rand-sleep-number) ")"))
 
+(def db (adb/open-db {:hostname "127.0.0.1"
+                  :port 5432 ; default
+                  :database "postgres"
+                  :username "postgres"
+                  :password "root"
+                  :pool-size 400}))
 
-; (def db (adb/open-db {:hostname "127.0.0.1"
-;                   :port 5432 ; default
-;                   :database "postgres"
-;                   :username "postgres"
-;                   :password "root"
-;                   :pool-size 400}))
-
-; (defn execute-db-workload [ch]
-;   (let [q     (select-query)
-;         users (atom ())]
-;     (adb/execute! db [q] (fn [res err]
-;                             ; (when err (println err))
-;                             (dotimes [_ LOOP-COUNT] (swap! users conj (create-user)))
-;                             (send! ch (json/encode {:users @users :query q :result res}))))))
-
+; Executors
 
 (defn execute-db-workload [ch]
-  (let [q     (str "http://127.0.0.1:8081/pg?sleep=" (rand-sleep-number))
-        users (atom ())]
+  (let [q (select-query)]
+    (adb/execute! db [q]
+      (fn [res err]
+        (send! ch (json/encode {:users (generate-users) :query q :result res}))))))
+
+(defn execute-remote-call [ch]
+  (let [q (str "http://127.0.0.1:8081/pg?sleep=" (rand-sleep-number))]
     (http/get q
       (fn [{:keys [status headers body error]}]
-      ; (fn [resp]
-        ; (when err (println err))
-        (dotimes [_ LOOP-COUNT] (swap! users conj (create-user)))
-        (send! ch (json/encode {:users @users :query q :result body :status status})))
-      ; (fn [ex] (send! ch (.getMessage ex))
-      )
-        ))
+        (send! ch (json/encode {:users (generate-users) :query q :result body :status status}))))))
 
 
 ; Endpoints
+(defn root-endpoint []
+  "<html>It's me, Ring App.<br/>Use routes:<br/>
+  <a href='./json'>json</a><br/>
+  <a href='./remote'>json</a><br/>
+  <a href='./db'>db</a></html>")
+
 (defn json-endpoint []
   (create-user))
 
@@ -82,8 +84,9 @@
   (with-channel req channel
     (execute-db-workload channel)))
 
-(defn root-endpoint []
-  "<html>It's me, Ring App.<br/>Use routes:<br/><a href='./json'>json</a><br/><a href='./db'>db</a></html>")
+(defn remote-endpoint [req]
+  (with-channel req channel
+    (execute-remote-call channel)))
 
 
 ; Main
@@ -91,6 +94,7 @@
   (GET "/" [] (root-endpoint))
   (GET "/json" [] (json/encode (json-endpoint)))
   (GET "/db" [] db-endpoint)
+  (GET "/remote" [] remote-endpoint)
   (route/resources "/")
   (route/not-found "Sorry, page not found"))
 
@@ -98,5 +102,6 @@
 (defn -main []
   (println (str "Running. SQL_SLEEP_MAX = " SLEEP-MAX " seconds; LOOP_COUNT = " LOOP-COUNT))
   (run-server main-routes {:port 8080
-                           :queue-size 50000
-                           :thread 300}))
+                          ;  :queue-size 50000
+                          ;  :thread 4
+                          }))

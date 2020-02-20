@@ -110,16 +110,16 @@ func main() {
 	})
 
 	e.GET("/pg", func(c echo.Context) error {
-        seconds, err := strconv.ParseFloat(c.QueryParam("sleep"), 64)
-        if err != nil {
-            log.Fatal(err)
+		seconds, err := strconv.ParseFloat(c.QueryParam("sleep"), 64)
+		if err != nil {
+			log.Fatal(err)
 		}
-        var result string
-        var result2 float64
+		var result string
+		var result2 float64
 		row := db.QueryRow(fmt.Sprintf("SELECT pg_sleep(%f), %f", seconds, seconds))
-        err = row.Scan(&result, &result2)
-        if err != nil {
-            log.Fatal(err)
+		err = row.Scan(&result, &result2)
+		if err != nil {
+			log.Fatal(err)
 		}
 		return c.JSON(http.StatusOK, result2)
 	})
@@ -129,7 +129,7 @@ func main() {
 		result := make(map[string]interface{})
 
 		// Do a long DB I/O call
-		sleepRand := float32(rand.Intn(sleep * 1000)) / 1000
+		sleepRand := float32(rand.Intn(sleep*1000)) / 1000
 		queryString := fmt.Sprintf("SELECT pg_sleep(%f)", sleepRand)
 		rows, err := db.Query(queryString)
 		defer rows.Close()
@@ -147,5 +147,5 @@ func main() {
 
 		return c.JSON(http.StatusOK, result)
 	})
-	e.Start(":8081")
+	e.Start(":8080")
 }
