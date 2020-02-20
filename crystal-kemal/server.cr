@@ -6,7 +6,7 @@ require "pg"
 
 SLEEP_MAX = (ENV["SQL_SLEEP_MAX"]? || 0).to_f
 LOOP_COUNT = (ENV["LOOP_COUNT"]? || 0).to_i
-APPDB = DB.open("postgres://postgres:root@127.0.0.1:5432/postgres")
+APPDB = DB.open("postgres://postgres:root@127.0.0.1:5432/postgres?initial_pool_size=400&max_idle_pool_size=400")
 
 
 def random_string(length)
@@ -67,4 +67,5 @@ get "/db" do
 end
 
 Kemal.config.logging = false
+Kemal.config.env = "production"
 Kemal.run
