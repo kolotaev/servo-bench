@@ -147,5 +147,5 @@ func main() {
 
 		return c.JSON(http.StatusOK, result)
 	})
-	e.Start(":8080")
+	e.Start("0.0.0.0:8080")
 }
