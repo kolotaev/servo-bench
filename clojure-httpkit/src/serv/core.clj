@@ -3,10 +3,8 @@
           org.httpkit.server)
     (:require [compojure.route :as route]
               [cheshire.core :as json]
-              ; [postgres.async :as adb]
-              [org.httpkit.client :as http]
-              [hikari-cp.core :refer :all]
-            [clojure.java.jdbc :as jdbc])
+              [postgres.async :as adb]
+              [org.httpkit.client :as http])
     (:gen-class))
 
 
@@ -50,45 +48,20 @@
 (defn- select-query []
   (str "SELECT pg_sleep(" (rand-sleep-number) ")"))
 
-; (def db (adb/open-db {:hostname "127.0.0.1"
-;                   :port 5432 ; default
-;                   :database "postgres"
-;                   :username "postgres"
-;                   :password "root"
-;                   :pool-size 400}))
+(def db (adb/open-db {:hostname "127.0.0.1"
+                  :port 5432 ; default
+                  :database "postgres"
+                  :username "postgres"
+                  :password "root"
+                  :pool-size 400}))
 
-(def datasource-options {:auto-commit        true
-                         :read-only          false
-                         :connection-timeout 30000
-                         :validation-timeout 5000
-                         :idle-timeout       600000
-                         :max-lifetime       1800000
-                         :minimum-idle       400
-                         :maximum-pool-size  400
-                         :pool-name          "db-pool"
-                         :adapter            "postgresql"
-                         :username           "postgres"
-                         :password           "root"
-                         :database-name      "postgres"
-                         :server-name        "localhost"
-                         :port-number        5432
-                         :register-mbeans    false})
-; (def memoize-hikari-data-source (memoize make-hikari-data-source))
-; (defn db-mysql-raw [] {:datasource (memoize-hikari-data-source)})
-(defonce datasource
-  (delay (make-datasource datasource-options)))
 ; Executors
 
-(defn execute-db-workload []
+(defn execute-db-workload [ch]
   (let [q (select-query)]
-    (jdbc/with-db-connection [conn {:datasource @datasource}]
-      (let [rows (jdbc/query conn q)]
-        (json/encode {:users (generate-users) :query q :result (str rows)})))))
-    ; ))
-
-    ; (adb/execute! db [q]
-    ;   (fn [res err]
-    ;     (send! ch (json/encode {:users (generate-users) :query q :result res}))))))
+    (adb/execute! db [q]
+      (fn [res err]
+        (send! ch (json/encode {:users (generate-users) :query q :result res}))))))
 
 (defn execute-remote-call [ch]
   (let [q (str "http://127.0.0.1:8081/pg?sleep=" (rand-sleep-number))]
@@ -101,7 +74,7 @@
 (defn root-endpoint []
   "<html>It's me, Ring App.<br/>Use routes:<br/>
   <a href='./json'>json</a><br/>
-  <a href='./remote'>remote</a><br/>
+  <a href='./remote'>json</a><br/>
   <a href='./db'>db</a></html>")
 
 (defn json-endpoint []
@@ -120,7 +93,7 @@
 (defroutes main-routes
   (GET "/" [] (root-endpoint))
   (GET "/json" [] (json/encode (json-endpoint)))
-  (GET "/db" [] (execute-db-workload))
+  (GET "/db" [] db-endpoint)
   (GET "/remote" [] remote-endpoint)
   (route/resources "/")
   (route/not-found "Sorry, page not found"))
@@ -130,5 +103,5 @@
   (println (str "Running. SQL_SLEEP_MAX = " SLEEP-MAX " seconds; LOOP_COUNT = " LOOP-COUNT))
   (run-server main-routes {:port 8080
                           ;  :queue-size 50000
-                           :thread 400
+                          ;  :thread 4
                           }))
