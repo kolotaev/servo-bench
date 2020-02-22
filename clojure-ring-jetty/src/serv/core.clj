@@ -2,7 +2,8 @@
     (:use compojure.core
           [ring.adapter.jetty :only [run-jetty]])
     (:require [compojure.route :as route]
-              [clojure.java.jdbc :as sql]
+              [clojure.java.jdbc :as jdbc]
+              [hikari-cp.core :refer :all]
               [compojure.handler :as handler]
               [cheshire.core :as json])
     (:gen-class))
@@ -14,13 +15,28 @@
 (defonce LOOP-COUNT
   (Integer. (or (System/getenv "LOOP_COUNT") "0")))
 
-(def db
-  {:classname   "org.postgresql.Driver"
-   :subprotocol "postgresql"
-   :subname     "//127.0.0.1:5432/postgres"
-   :user        "postgres"
-   :password    "root"})
+(defonce POOL-SIZE
+  (Integer. (or (System/getenv "POOL_SIZE") "400")))
 
+(def datasource-options {:auto-commit        true
+                         :read-only          false
+                         :connection-timeout 30000
+                         :validation-timeout 5000
+                         :idle-timeout       600000
+                         :max-lifetime       1800000
+                         :minimum-idle       POOL-SIZE
+                         :maximum-pool-size  POOL-SIZE
+                         :pool-name          "db-pool"
+                         :adapter            "postgresql"
+                         :username           "postgres"
+                         :password           "root"
+                         :database-name      "postgres"
+                         :server-name        "localhost"
+                         :port-number        5432
+                         :register-mbeans    false})
+
+(defonce datasource
+  (delay (make-datasource datasource-options)))
 
 ; Helpers
 (defn rand-string
@@ -52,11 +68,15 @@
 
 (defn db-endpoint []
   (let [q     (select-query)
-        users (atom ())]
-    (sql/query db [q])
+        users (atom ())
+        res   (atom "")]
+    (jdbc/with-db-connection [conn {:datasource @datasource}]
+      (let [rows (jdbc/query conn q)]
+        (swap! res str (first rows))))
     (dotimes [_ LOOP-COUNT]
       (swap! users conj (create-user)))
     {:users @users
+     :res @res
      :query q}))
 
 
@@ -76,5 +96,7 @@
   (handler/api main-routes))
 
 (defn -main []
-  (println (str "Running. SQL_SLEEP_MAX = " SLEEP-MAX " seconds; LOOP_COUNT = " LOOP-COUNT))
-  (run-jetty app {:port 8080}))
+  (println (str "Running. SQL_SLEEP_MAX = " SLEEP-MAX " seconds; LOOP_COUNT = " LOOP-COUNT "; pool = " POOL-SIZE))
+  (run-jetty app {:port 8080
+                  :min-threads 200
+                  :max-threads 400}))

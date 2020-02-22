@@ -16,6 +16,9 @@
 (defonce LOOP-COUNT
   (Integer. (or (System/getenv "LOOP_COUNT") "0")))
 
+(defonce POOL-SIZE
+  (Integer. (or (System/getenv "POOL_SIZE") "400")))
+
 
 ; Helpers
 (defn- rand-string
@@ -53,7 +56,7 @@
                   :database "postgres"
                   :username "postgres"
                   :password "root"
-                  :pool-size 400}))
+                  :pool-size POOL-SIZE}))
 
 ; Executors
 
@@ -74,7 +77,7 @@
 (defn root-endpoint []
   "<html>It's me, Ring App.<br/>Use routes:<br/>
   <a href='./json'>json</a><br/>
-  <a href='./remote'>json</a><br/>
+  <a href='./remote'>remote</a><br/>
   <a href='./db'>db</a></html>")
 
 (defn json-endpoint []
@@ -100,7 +103,7 @@
 
 
 (defn -main []
-  (println (str "Running. SQL_SLEEP_MAX = " SLEEP-MAX " seconds; LOOP_COUNT = " LOOP-COUNT))
+  (println (str "Running. SQL_SLEEP_MAX = " SLEEP-MAX " seconds; LOOP_COUNT = " LOOP-COUNT "; pool = " POOL-SIZE))
   (run-server main-routes {:port 8080
                           ;  :queue-size 50000
                           ;  :thread 4
