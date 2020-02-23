@@ -66,4 +66,4 @@ config :serv, Serv.Repo,
   username: "postgres",
   password: "root",
   database: "postgres",
-  pool_size: 400
+  pool_size: Integer.parse(System.get_env("POOL_SIZE", 400))

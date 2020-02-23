@@ -10,7 +10,7 @@
 
 
 (defonce SLEEP-MAX
-  (Integer. (or (System/getenv "SQL_SLEEP_MAX") "0")))
+  (Float. (or (System/getenv "SQL_SLEEP_MAX") "0")))
 
 (defonce LOOP-COUNT
   (Integer. (or (System/getenv "LOOP_COUNT") "0")))

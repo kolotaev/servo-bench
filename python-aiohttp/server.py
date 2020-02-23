@@ -13,7 +13,8 @@ HOST = '0.0.0.0'
 PORT = 8080
 SLEEP_MAX = int(os.environ.get('SQL_SLEEP_MAX', 0))
 LOOP_COUNT = int(os.environ.get('LOOP_COUNT', 0))
-DSN = 'postgres://postgres:root@127.0.0.1:5432/postgres'
+POOL_SIZE = int(os.environ.get('POOL_SIZE', 400))
+DSN = 'postgres://postgres:root@127.0.0.1:5432/postgres?initial_pool_size=%i&max_idle_pool_size=%i' % (POOL_SIZE, POOL_SIZE)
 
 
 def random_string(max_len):

@@ -9,6 +9,7 @@ const HOST = '0.0.0.0';
 
 const sqlMaxSleep = parseInt(process.env.SQL_SLEEP_MAX) || 0; // seconds
 const loopCount = parseInt(process.env.LOOP_COUNT) || 0;
+const poolSize = parseInt(process.env.POOL_SIZE) || 400;
 
 
 function randomString(len) {
@@ -55,7 +56,7 @@ const pool = new Pool({
   database: 'postgres',
   password: 'root',
   port: 5432,
-  max: 400, // number of connections
+  max: poolSize, // number of connections
 });
 
 // Routes

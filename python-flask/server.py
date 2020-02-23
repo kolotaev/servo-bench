@@ -21,6 +21,7 @@ HOST = '0.0.0.0'
 PORT = 8080
 SLEEP_MAX = int(os.environ.get('SQL_SLEEP_MAX', 0))
 LOOP_COUNT = int(os.environ.get('LOOP_COUNT', 0))
+POOL_SIZE = int(os.environ.get('POOL_SIZE', 400))
 
 
 def random_string(max_len):
@@ -61,10 +62,10 @@ app = Flask(__name__)
 app.json_encoder = MyJSONEncoder
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
-app.logger.error('Using SQL_SLEEP_MAX = %i seconds; LOOP_COUNT = %i' % (SLEEP_MAX, LOOP_COUNT))
+app.logger.error('Using SQL_SLEEP_MAX = %i seconds; LOOP_COUNT = %i; POOL_SIZE = %i' % (SLEEP_MAX, LOOP_COUNT, POOL_SIZE))
 try:
     dsn = 'dbname=postgres user=postgres password=root host=127.0.0.1 '
-    pool = pgpool.PostgresConnectionPool(dsn=dsn, maxsize=380)
+    pool = pgpool.PostgresConnectionPool(dsn=dsn, maxsize=POOL_SIZE)
 except Exception as e:
     app.logger.error(e)
     sys.exit(e)
