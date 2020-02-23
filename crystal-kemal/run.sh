@@ -1,1 +1,1 @@
-./server -p 8080
+./server

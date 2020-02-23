@@ -43,6 +43,8 @@ class User
   )
 end
 
+# Endpoints:
+
 get "/" do
   "
   <html>It's me, Kemal App.<br/>
@@ -66,6 +68,14 @@ get "/db" do
   { :db_query => qry, :data => users, :result => result }.to_json
 end
 
+ws "/" do |socket|
+  socket.on_message do |message|
+    puts message
+    socket.send message.reverse
+  end
+end
+
 Kemal.config.logging = false
 Kemal.config.env = "production"
+Kemal.config.port = 8080
 Kemal.run

@@ -84,3 +84,6 @@ project/target/
 crystal-kemal/lib/
 crystal-kemal/bin
 crystal-kemal/server
+
+# Thor ws benchmarker
+thor/
