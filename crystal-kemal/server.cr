@@ -6,7 +6,7 @@ require "pg"
 
 SLEEP_MAX = (ENV["SQL_SLEEP_MAX"]? || 0).to_f
 LOOP_COUNT = (ENV["LOOP_COUNT"]? || 0).to_i
-POOL_SIZE = (ENV["POOL_SIZE"]? || 400).to_i.to_s
+POOL_SIZE = (ENV["POOL_SIZE"]? || 1).to_i.to_s
 APPDB = DB.open(
   "postgres://postgres:root@127.0.0.1:5432/postgres?initial_pool_size=" + POOL_SIZE + "&max_idle_pool_size=" + POOL_SIZE
 )

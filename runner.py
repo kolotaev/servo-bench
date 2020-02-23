@@ -13,6 +13,7 @@ import pexpect
 RUN_TIME = (int(sys.argv[1]) if len(sys.argv) == 2 else 1) * 60  # in seconds
 SAMPLE_NUM = 5     # time to do measurement during the period of run
 SQL_SLEEP_MAX = 2  # SQL query sleep time seconds
+POOL_SIZE = 450    # Postgres pool size
 LOOP_COUNT = 100   # Iterate times creating objects to push some CPU/Mem load
 THREADS = 12       # threads number for wrk run
 CONNECTIONS = 400  # connections number for wrk run
@@ -24,7 +25,7 @@ CMDS = {
     'cpu-usage': "top -bn3 | grep Cpu\(s\) | awk 'NR == 3 { print \"___\"$2 + $4\"___\"}'",  # get us + sys
     'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s -s wrk_report.lua --timeout 10s',
     'cd-framework': 'cd /shared/%s',
-    'docker-run': '../mule.sh -rk -s %d -l %d' % (SQL_SLEEP_MAX, LOOP_COUNT)
+    'docker-run': '../mule.sh -rk -s %d -l %d -p %d' % (SQL_SLEEP_MAX, LOOP_COUNT, POOL_SIZE)
 }
 
 # for awk-ed 'top' command output

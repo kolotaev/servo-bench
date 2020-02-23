@@ -16,7 +16,7 @@
   (Integer. (or (System/getenv "LOOP_COUNT") "0")))
 
 (defonce POOL-SIZE
-  (Integer. (or (System/getenv "POOL_SIZE") "400")))
+  (Integer. (or (System/getenv "POOL_SIZE") "1")))
 
 (def datasource-options {:auto-commit        true
                          :read-only          false

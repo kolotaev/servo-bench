@@ -7,6 +7,7 @@ DO_RUN=false
 ATTACHED=false
 SQL_SLEEP_MAX=2 # seconds
 LOOP_COUNT=100
+POOL_SIZE=400
 
 
 # Functions
@@ -57,7 +58,7 @@ function launch_container() {
             CMD="${CMD} -d "
         fi
 
-        CMD="${CMD} -e SQL_SLEEP_MAX=${SQL_SLEEP_MAX} -e LOOP_COUNT=${LOOP_COUNT}"
+        CMD="${CMD} -e SQL_SLEEP_MAX=${SQL_SLEEP_MAX} -e LOOP_COUNT=${LOOP_COUNT} -e POOL_SIZE=${POOL_SIZE}"
         CMD="${CMD} --net=host $IMAGE"
 
         echo "++ Launching container..."
@@ -102,6 +103,7 @@ OPTIONS:
    -a      Attach container's TTY? (default: false)
    -l      Max loop count for service load. Docker container env variable LOOP_COUNT (default: 100)
    -s      Max sleep seconds for DB call. Docker container env variable SQL_SLEEP_MAX (default: 2)
+   -p      Postgres pool size (min & max). Docker container env variable POOL_SIZE (default: 400)
    -h      Show script usage
 -------------------------------------------
 EOF
@@ -120,6 +122,7 @@ do
     a) ATTACHED=true;;
     l) LOOP_COUNT=${OPTARG};;
     s) SQL_SLEEP_MAX=${OPTARG};;
+    p) POOL_SIZE=${OPTARG};;
     x) build_all_images; exit;;
     h) show_usage; exit;;
     \?) show_usage; exit;;
