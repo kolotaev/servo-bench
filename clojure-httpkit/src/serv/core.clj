@@ -67,7 +67,7 @@
         (send! ch (json/encode {:users (generate-users) :query q :result res}))))))
 
 (defn execute-remote-call [ch]
-  (let [q (str "http://127.0.0.1:8081/pg?sleep=" (rand-sleep-number))]
+  (let [q (str "http://127.0.0.1:8081/pg/" (rand-sleep-number))]
     (http/get q
       (fn [{:keys [status headers body error]}]
         (send! ch (json/encode {:users (generate-users) :query q :result body :status status}))))))
