@@ -19,7 +19,7 @@ import pgpool
 
 HOST = '0.0.0.0'
 PORT = 8080
-SLEEP_MAX = int(os.environ.get('SQL_SLEEP_MAX', 0))
+SLEEP_MAX = float(os.environ.get('SQL_SLEEP_MAX', 0))
 LOOP_COUNT = int(os.environ.get('LOOP_COUNT', 0))
 POOL_SIZE = int(os.environ.get('POOL_SIZE', 1))
 
@@ -91,12 +91,12 @@ def json():
 @app.route('/db')
 def db():
     qry = 'SELECT pg_sleep(%f)' % random.uniform(0, SLEEP_MAX)
-    db_execute(sql=qry)
+    res = db_execute(sql=qry)
     users = []
     for i in range(LOOP_COUNT):
         user = create_user()
         users.append(user)
-    return jsonify({'db-query': qry, 'data': users})
+    return jsonify({'db-query': qry, 'data': users, 'result': res})
 
 
 if __name__ == '__main__':
