@@ -14,6 +14,7 @@
   - [Elixir. Phoenix. OTP.](#elixir-phoenix-otp)
   - [Elixir. Plug. OTP.](#elixir-plug-otp)
   - [Ruby. Sinatra. Synchrony.](#ruby-sinatra-synchrony)
+  - [Lua. Openresty. Nginx.](#lua-openresty-nginx)
 - [Mule script](#mule-script)
 - [Runner script](#runner-script)
 - [Results](#results)
@@ -104,6 +105,13 @@ With async PG driver.
 - [Ruby](https://www.ruby-lang.org)
 - [Sinatra](http://sinatrarb.com)
 - [Synchrony](https://github.com/kyledrake/sinatra-synchrony)
+
+
+### Lua. Openresty. Nginx.
+
+- [Luajit](https://luajit.org)
+- [Openresty](https://openresty.org/)
+- [Nginx](http://nginx.org)
 
 
 ## Mule script
