@@ -10,6 +10,7 @@
   - [Python. Aiohttp. UVloop.](#python-aiohttp)
   - [Clojure. Ring. Jetty.](#clojure-ring-jetty)
   - [Clojure. Http-kit. Postgres.async.](#clojure-http-kit)
+  - [Clojure. Undertow.](#clojure-unedrtow)
   - [Scala. Play. Akka.](#scala-play-akka)
   - [Elixir. Phoenix. OTP.](#elixir-phoenix-otp)
   - [Elixir. Plug. OTP.](#elixir-plug-otp)
@@ -78,6 +79,12 @@ Jetty with all default settings.
 
 Event-driven, high-performance clojure server/client library.
 With async PG driver.
+
+
+### Clojure. Undertow.
+
+- [Unertow](http://undertow.io)
+- [Undertow-ring](https://github.com/piranha/ring-undertow-adapter)
 
 
 ### Scala. Play. Akka.
