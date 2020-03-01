@@ -6,14 +6,17 @@ import threading
 import itertools
 from contextlib import contextmanager
 from string import Template
+from functools import partial
+from statistics import mean
 
 import pexpect
 
 
+# todo - use argparse
 RUN_TIME = (int(sys.argv[1]) if len(sys.argv) == 2 else 1) * 60  # in seconds
 SAMPLE_NUM = 5     # time to do measurement during the period of run
 SQL_SLEEP_MAX = 2  # SQL query sleep time seconds
-POOL_SIZE = 450    # Postgres pool size
+POOL_SIZE = 400    # Postgres pool size
 LOOP_COUNT = 100   # Iterate times creating objects to push some CPU/Mem load
 THREADS = 12       # threads number for wrk run
 CONNECTIONS = 400  # connections number for wrk run
@@ -21,17 +24,14 @@ CONNECTIONS = 400  # connections number for wrk run
 PROMPT = 'vagrant@servobench'
 
 CMDS = {
-    'free-mem': "free | awk '/Mem/{print \"___\"$3 + 0\"___\"}'",
-    'cpu-usage': "top -bn3 | grep Cpu\(s\) | awk 'NR == 3 { print \"___\"$2 + $4\"___\"}'",  # get us + sys
+    'mem-usage': "sudo python -m ps_mem | awk '/%s/{print \"___\"$7$8\"___\"}'", # substitute process name
+    'cpu-usage': "top -bn1 | awk '/%s/{ SUM += $9 } END { print \"___\"SUM\"___\" }'", # substitute process name
     'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s -s wrk_report.lua --timeout 10s',
     'cd-framework': 'cd /shared/%s',
     'docker-run': '../mule.sh -rk -s %d -l %d -p %d' % (SQL_SLEEP_MAX, LOOP_COUNT, POOL_SIZE)
 }
 
-# for awk-ed 'top' command output
-SEARCH_PATTERN = '___([0-9]+\.?[0-9]?)___'
-
-REPORT_FILE = 'runner-results.md'
+REPORT_FILE = 'benchmark-results.md'
 
 REPORT_TEMPLATE = """
 ==========================
@@ -47,21 +47,16 @@ Results:
 | Req. Latency (%'le - latency)   | $latency_percentiles |
 | 5xx/4xx responses               | $bad_responses |
 | N timeout-ed                    | $timeouted  |
-| Memory used, Mb                 | $mem_used |
-| Memory occupied before run, Mb  | $mem_before_run |
-| Memory used samples, Mb         | $mem_samples |
+| Memory used (mean), Mib         | $mem_used |
+| Memory used samples, Mib        | $mem_samples |
+| CPU used (mean), %              | $cpu_used |
 | CPU used samples, %             | $cpu_samples |
-| Test run time                   | $time  |
-| N connections                   | $connections  |
-| N threads                       | $threads  |
+| Wrk test run time               | $time  |
+| Wrk N connections               | $connections  |
+| Wrk N threads                   | $threads  |
 | Data read                       | $data_read  |
 ==========================
 """
-
-# Global vars
-cpu_before = 0
-mem_before = 0
-
 
 @contextmanager
 def vagrant():
@@ -107,49 +102,46 @@ def ask_for_suites():
 
 
 def do_report(cpu_samples, mem_samples, **kwargs):
-    consumed_mem = lambda x, y: round(((sum(x) / len(x) - y) / 1000), 1)
-    consumed_cpu = lambda x, y: round((sum(x) / len(x) - y), 1)
-    mem_samples = list(map(lambda x: int(x), mem_samples))
-    cpu_samples = list(map(float, cpu_samples))
     print('Memory: ', mem_samples)
     print('CPU: ', cpu_samples)
-    cpu_used = consumed_cpu(cpu_samples, cpu_before)
-    mem_used = consumed_mem(mem_samples, mem_before)
-    if mem_used < 0:
-        mem_used = 0
+    mem_used = mean(mem_samples)
+    cpu_used = mean(cpu_samples)
     print('Memory used, mb: ', mem_used)
     print('CPU used, %: ', cpu_used)
     print('Doing report to file...')
-    kwargs['mem_before_run'] = int(mem_before / 1000)
-    kwargs['cpu_used'] = cpu_used
     kwargs['mem_used'] = mem_used
-    kwargs['mem_samples'] = list(map(lambda x: int(x / 1000), mem_samples))
+    kwargs['cpu_used'] = cpu_used
+    kwargs['mem_samples'] = mem_samples
     kwargs['cpu_samples'] = cpu_samples
     kwargs['current_time'] = time.ctime()
     report = Template(REPORT_TEMPLATE).substitute(kwargs)
-    with open(REPORT_FILE, "a") as f:
+    with open(REPORT_FILE, 'a') as f:
         f.write(report)
 
 
 def run(s, framework, endpoint):
-    global cpu_before, mem_before
     mem_samples = []
     cpu_samples = []
     wrk_cmd = CMDS['wrk'] % (RUN_TIME, endpoint)
     cd_cmd = CMDS['cd-framework'] % framework
+    framework_processname = 'unknown'
 
-    def sample_it():
+    def sample_it(processname):
         time.sleep(RUN_TIME * 0.2)
-
         def task():
             time.sleep(RUN_TIME * 0.6 / SAMPLE_NUM / 2)
-            s.sendline(CMDS['free-mem'])
-            s.expect(SEARCH_PATTERN, timeout=100)
-            mem_samples.append(s.match.groups()[0])
-            s.sendline(CMDS['cpu-usage'])
-            s.expect(SEARCH_PATTERN, timeout=100)
-            cpu_samples.append(s.match.groups()[0])
-
+            s.sendline(CMDS['cpu-usage'] % processname)
+            s.expect(r"___([0-9]+\.?[0-9]?)___", timeout=100)
+            cpu_samples.append(float(s.match.groups()[0]))
+            s.sendline(CMDS['mem-usage'] % processname)
+            s.expect(r"___([0-9]+\.?[0-9]?)((?:M|G|K|T)i.*?)___", timeout=100)
+            mem = float(s.match.groups()[0])
+            mem_units = s.match.groups()[1]
+            if mem_units.startswith('Ki'):
+                mem /= 1024
+            elif mem_units.startswith('Gi'):
+                mem *= 1024
+            mem_samples.append(int(mem))
         counter(task, SAMPLE_NUM)
 
     print('=' * 15, 'Working. %s server. %s endpoint.' % (framework.upper(), endpoint.upper()), '=' * 15)
@@ -165,28 +157,18 @@ def run(s, framework, endpoint):
     s.sendline('pwd')
     s.expect(framework)
 
-    # run docker
+    # get framework's processname for sampling (read it from the host machine)
+    with open('./%s/processname.txt' % framework) as f:
+        framework_processname = f.read().strip()
+
+    # run framework in docker
     print('run docker... ', CMDS['docker-run'])
     s.sendline(CMDS['docker-run'])
     s.expect('Launching container')
     s.expect(PROMPT)
 
-    print('Sampling resources before run...')
-    # get cpu usage: %
-    s.sendline(CMDS['cpu-usage'])
-    s.expect(SEARCH_PATTERN)
-    cpu_before = float(s.match.groups()[0])
-
-    # get memory usage: bytes
-    s.sendline(CMDS['free-mem'])
-    s.expect(SEARCH_PATTERN)
-    mem_before = int(s.match.groups()[0])
-
-    print('Mem, kb: ---->', mem_before)
-    print('CPU, %:  ---->', cpu_before)
-
     # start background sampling thread
-    t = threading.Thread(target=sample_it)
+    t = threading.Thread(target=partial(sample_it, framework_processname))
     t.start()
 
     # Run wrk benchmark
@@ -212,6 +194,7 @@ def run(s, framework, endpoint):
     m = re.search('Non-2xx or 3xx responses:\W*([\.\d]+)', res)
     bad_resps = m.group(1).strip() if m else '0'
 
+    t.join(RUN_TIME + 30)
     print('Reporting resource measurements during benchmark...')
     do_report(cpu_samples=cpu_samples,
               mem_samples=mem_samples,
@@ -226,9 +209,7 @@ def run(s, framework, endpoint):
               latency=run_latency_avg,
               latency_percentiles=run_latencies,
               bad_responses=bad_resps)
-
     print('Exiting...')
-    t.join(RUN_TIME + 60)
 
 
 if __name__ == '__main__':

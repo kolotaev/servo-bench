@@ -16,7 +16,7 @@
   - [Ruby. Sinatra. Synchrony.](#ruby-sinatra-synchrony)
   - [Lua. Openresty. Nginx.](#lua-openresty-nginx)
 - [Mule script](#mule-script)
-- [Runner script](#runner-script)
+- [Benchmark script](#benchmark-script)
 - [Results](#results)
 
 
