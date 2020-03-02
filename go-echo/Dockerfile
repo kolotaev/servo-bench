@@ -8,7 +8,7 @@ RUN go get -u github.com/labstack/echo/... && go get github.com/lib/pq/...
 
 ADD . .
 
-RUN go build server.go && mv server go-echo-server
+RUN go build server.go && mv server goecho
 
 ENTRYPOINT ./runner.sh
 

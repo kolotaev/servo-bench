@@ -109,21 +109,6 @@ func main() {
 		return c.JSON(http.StatusOK, &user)
 	})
 
-	e.GET("/pg", func(c echo.Context) error {
-		seconds, err := strconv.ParseFloat(c.QueryParam("sleep"), 64)
-		if err != nil {
-			log.Fatal(err)
-		}
-		var result string
-		var result2 float64
-		row := db.QueryRow(fmt.Sprintf("SELECT pg_sleep(%f), %f", seconds, seconds))
-		err = row.Scan(&result, &result2)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return c.JSON(http.StatusOK, result2)
-	})
-
 	e.GET("/db", func(c echo.Context) error {
 		var users []*User
 		result := make(map[string]interface{})
