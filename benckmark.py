@@ -4,6 +4,7 @@ import time
 import sys
 import threading
 import itertools
+import argparse
 from contextlib import contextmanager
 from string import Template
 from functools import partial
@@ -12,21 +13,31 @@ from statistics import mean
 import pexpect
 
 
-# todo - use argparse
-RUN_TIME = (int(sys.argv[1]) if len(sys.argv) == 2 else 1) * 60  # in seconds
-SAMPLE_NUM = 5     # time to do measurement during the period of run
-SQL_SLEEP_MAX = 2  # SQL query sleep time seconds
-POOL_SIZE = 400    # Postgres pool size
-LOOP_COUNT = 100   # Iterate times creating objects to push some CPU/Mem load
-THREADS = 12       # threads number for wrk run
-CONNECTIONS = 400  # connections number for wrk run
+parser = argparse.ArgumentParser(description='Run vakt benchmark.')
+parser.add_argument('-d', '--duration', dest='RUN_TIME', nargs='?', type=int, default=60,
+                    help='run wrk for N seconds (default: %(default)d)')
+parser.add_argument('-t', '--threads', dest='THREADS', nargs='?', type=int, default=12,
+                    help='threads number for wrk run (default: %(default)d)')
+parser.add_argument('-c', '--connections', dest='CONNECTIONS', nargs='?', type=int, default=400,
+                    help='connections number for wrk run (default: %(default)d)')
+parser.add_argument('-S', '--samples', dest='SAMPLE_NUM', nargs='?', type=int, default=5,
+                    help='times to do measurement during the period of a run (default: %(default)d)')
+parser.add_argument('-s', '--sleep', dest='SQL_SLEEP_MAX', nargs='?', type=float, default=2,
+                    help='SQL query sleep time seconds (default: %(default)d)')
+parser.add_argument('-l', '--loop', dest='LOOP_COUNT', nargs='?', type=int, default=100,
+                    help='Iterate times creating objects to push some CPU/Mem load (default: %(default)d)')
+parser.add_argument('-p', '--pool', dest='POOL_SIZE', nargs='?', type=int, default=400,
+                    help='Postgres pool size (default: %(default)d)')
+ARGS = parser.parse_args()
+globals().update(ARGS.__dict__)  # a dirty way
+
 
 PROMPT = 'vagrant@servobench'
 
 CMDS = {
     'mem-usage': "sudo python -m ps_mem | awk '/%s/{print \"___\"$7$8\"___\"}'", # substitute process name
     'cpu-usage': "top -bn1 | awk '/%s/{ SUM += $9 } END { print \"___\"SUM\"___\" }'", # substitute process name
-    'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s -s wrk_report.lua --timeout 10s',
+    'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s -s wrk_report.lua',
     'cd-framework': 'cd /shared/%s',
     'docker-run': '../mule.sh -rk -s %d -l %d -p %d' % (SQL_SLEEP_MAX, LOOP_COUNT, POOL_SIZE)
 }
@@ -104,8 +115,8 @@ def ask_for_suites():
 def do_report(cpu_samples, mem_samples, **kwargs):
     print('Memory: ', mem_samples)
     print('CPU: ', cpu_samples)
-    mem_used = mean(mem_samples)
-    cpu_used = mean(cpu_samples)
+    mem_used = round(mean(mem_samples))
+    cpu_used = round(mean(cpu_samples))
     print('Memory used, mb: ', mem_used)
     print('CPU used, %: ', cpu_used)
     print('Doing report to file...')
