@@ -9,13 +9,11 @@ from contextlib import contextmanager
 from string import Template
 from functools import partial
 from statistics import mean
-from operator import itemgetter
 
 import pexpect
-import matplotlib.pyplot as plt
 
 
-parser = argparse.ArgumentParser(description='Run vakt benchmark.')
+parser = argparse.ArgumentParser(description='Run servo-bench benchmark.')
 parser.add_argument('-d', '--duration', dest='RUN_TIME', nargs='?', type=int, default=60,
                     help='run wrk for N seconds (default: %(default)d)')
 parser.add_argument('-t', '--threads', dest='THREADS', nargs='?', type=int, default=12,
@@ -113,40 +111,6 @@ def ask_for_suites():
     apis = ['json', 'db']
     return list(itertools.product(selector('framework', dirs), selector('endpoint', apis)))
 
-def generate_data_for_chart(file):
-    bag = {}
-    with open(file) as f:
-        runs = re.split(r'====\nDate:', f.read())
-        for run in runs:
-            fr_m = re.search(r'Framework.*\|(.+)\|', run)
-            endp_m = re.search(r'Endpoint.*\|(.+)\|', run)
-            if fr_m and endp_m:
-                fr = fr_m.group(1).strip()
-                endp = endp_m.group(1).strip()
-                if fr not in bag:
-                    bag[fr] = {}
-                if endp not in  bag[fr]:
-                    bag[fr][endp] = []
-                bag[fr][endp].append({
-                    'lat-50': float(re.search(r"\('50',\s?'(.*)'\), \('70", run).group(1)),
-                    'lat-90': float(re.search(r"\('99',\s?'(.*)'\), \('99\.9'", run).group(1)),
-                    'reqs': round(float(re.search(r"Requests/sec.*\|(.+)\|", run).group(1))),
-                    'cpu': round(float(re.search(r"CPU used \(mean\).*\|(.+)\|", run).group(1))),
-                    'mem': round(float(re.search(r"Memory used \(mean\).*\|(.+)\|", run).group(1))),
-                    'failed': round(float(re.search(r"5xx/4xx responses.*\|(.+)\|", run).group(1))),
-                })
-    return bag
-
-def create_chart(data, name, endpoint='/db', stat_name='reqs', color='gray'):
-    frs = sorted(data.keys())
-    y = list(map(lambda x: max(data[x][endpoint], key=itemgetter(stat_name))[stat_name], frs))
-    for i, v in enumerate(y):
-        plt.text(v - 60, i + 0, str(v))
-    plt.barh(frs, y, align='center', alpha=0.5)
-    plt.autoscale()
-    plt.xlabel('RPS')
-    plt.title(name)
-    plt.savefig('_images/name.png', transparent=True)
 
 def do_report(cpu_samples, mem_samples, **kwargs):
     print('Memory: ', mem_samples)
@@ -164,8 +128,7 @@ def do_report(cpu_samples, mem_samples, **kwargs):
     report = Template(REPORT_TEMPLATE).substitute(kwargs)
     with open(REPORT_FILE, 'a') as f:
         f.write(report)
-    data = generate_data_for_chart(REPORT_FILE)
-    create_chart(data, 'ffff')
+
 
 def run(s, framework, endpoint):
     mem_samples = []
