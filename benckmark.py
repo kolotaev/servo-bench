@@ -143,11 +143,11 @@ def run(s, framework, endpoint):
             time.sleep(RUN_TIME * 0.6 / SAMPLE_NUM / 2)
             s.sendline(CMDS['cpu-usage'] % processname)
             s.expect(r"___([0-9]+\.?[0-9]?)___", timeout=100)
-            cpu_samples.append(float(s.match.groups()[0]))
+            cpu_samples.append(float(s.match.group(1)))
             s.sendline(CMDS['mem-usage'] % processname)
             s.expect(r"___([0-9]+\.?[0-9]?)((?:M|G|K|T)i.*?)___", timeout=100)
-            mem = float(s.match.groups()[0])
-            mem_units = s.match.groups()[1]
+            mem = float(s.match.group(1))
+            mem_units = s.match.group(1)
             if mem_units.startswith('Ki'):
                 mem /= 1024
             elif mem_units.startswith('Gi'):
