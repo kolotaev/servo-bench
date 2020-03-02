@@ -88,3 +88,6 @@ crystal-kemal/server
 
 # Thor ws benchmarker
 thor/
+
+# Jupyter
+test.ipynb
