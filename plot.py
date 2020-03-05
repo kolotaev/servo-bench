@@ -2,6 +2,7 @@ import re
 import argparse
 from operator import itemgetter
 import os.path
+from functools import partial
 
 import matplotlib.pyplot as plt
 
@@ -49,19 +50,21 @@ def create_chart(data, outdir, name, endpoint='/db', stat_name='reqs', legend='R
     plt.autoscale()
     plt.xlabel(legend)
     plt.title(name)
-    plt.subplots_adjust(left=0.25)
-    plt.savefig(os.path.join(outdir, name + '.png'), transparent=False)
+    plt.subplots_adjust(left=0.27)
+    plt.savefig(os.path.join(outdir, name.replace(' ', '_') + '.png'), transparent=False)
     plt.cla()
     plt.clf()
 
 def generate_all(in_file, outdir):
-    data = generate_data_for_chart(in_file)
-    create_chart(data, outdir, 'Requests per second DB (1 sec sleep)', endpoint='/db', stat_name='reqs', legend='Requests', color='#6497b1')
-    create_chart(data, outdir, 'Memory usage DB', endpoint='/db', stat_name='mem', legend='Mb', color='#dec3c3')
-    create_chart(data, outdir, 'CPU usage DB', endpoint='/db', stat_name='cpu', legend='%', color='#bbbbbb')
-    create_chart(data, outdir, 'Failed requests DB', endpoint='/db', stat_name='failed', legend='requests', color='#ff6f69')
-    create_chart(data, outdir, 'Latency for 50-percentile DB', endpoint='/db', stat_name='lat-50', legend='seconds', color='#3c2f2f')
-    create_chart(data, outdir, 'Latency for 90-percentile DB', endpoint='/db', stat_name='lat-90', legend='seconds', color='#3385c6')
+    # for e in ['/db', '/json']:
+    for e in ['/db']:
+        chart_it = partial(create_chart, generate_data_for_chart(in_file), os.path.join(outdir, e[1:]))
+        chart_it('Requests per second (1 sec. sleep)', endpoint=e, stat_name='reqs', legend='Requests', color='#6497b1')
+        chart_it('Memory usage', endpoint=e, stat_name='mem', legend='Mb', color='#dec3c3')
+        chart_it('CPU usage', endpoint=e, stat_name='cpu', legend='%', color='#bbbbbb')
+        chart_it('Failed requests', endpoint=e, stat_name='failed', legend='requests', color='#ff6f69')
+        chart_it('Latency for 50-percentile', endpoint=e, stat_name='lat-50', legend='seconds', color='#3c2f2f')
+        chart_it('Latency for 90-percentile', endpoint=e, stat_name='lat-90', legend='seconds', color='#3385c6')
 
 if __name__ == '__main__':
     generate_all(ARGS.file, ARGS.dir)
