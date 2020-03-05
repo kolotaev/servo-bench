@@ -5,7 +5,7 @@ defmodule Benchmarker.Mixfile do
     [app: :benchmarker,
      version: "0.0.1",
      elixir: "~> 1.8",
-     deps: deps,
+     deps: deps(),
      aliases: [server: ["app.start", &server/1]]]
   end
 
@@ -25,9 +25,12 @@ defmodule Benchmarker.Mixfile do
   #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
   #
   # Type `mix help deps` for more examples and options
-  defp deps do
-    [{:cowboy, "~> 1.0"},
-     {:plug, "~> 1.2-rc"}]
+  defp deps() do
+    [
+      {:plug_cowboy, "~> 2.0"},
+      {:jason, "~> 1.1"},
+      {:postgrex, "~> 0.15"},
+    ]
   end
 
   defp server(_) do

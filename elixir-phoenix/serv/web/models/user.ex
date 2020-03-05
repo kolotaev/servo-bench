@@ -4,10 +4,7 @@ defmodule Serv.User do
   @chars "ABCDEFGHIJKLMNOP" |> String.split("")
 
   def new_user(has_friend?) do
-    friend = nil
-    if has_friend? do
-      friend = new_user(false)
-    end
+    fr = if has_friend?, do: new_user(false), else: nil
     %{
       name: random_string(10),
       surname: random_string(3),
@@ -17,7 +14,7 @@ defmodule Serv.User do
       a: rand_int(100),
       b: rand_float(),
       c: rand_int(1090),
-      friend: friend
+      friend: fr
     }
   end
 
