@@ -33,10 +33,11 @@
   wrk -t12 -c400 -d300s http://vagrant-machine:8080/db
   ```
 
-  [![](_images/db/Requests_per_second_(1_sec._sleep).png)]()
-  [![](_images/db/Latency_for_50-percentile.png)]()
-  [![](_images/db/Memory_usage.png)]()
-  [![](_images/db/CPU_usage.png)]()
+  ![rps](_images/db/Requests_per_second_(1_sec._sleep).png)
+  ![latency50](_images/db/Latency_for_50-percentile.png)
+  ![latency99](_images/db/Latency_for_99-percentile.png)
+  ![mem_used](_images/db/Memory_usage.png)
+  ![cpu_used](_images/db/CPU_usage.png)
 
 ## Frameworks
 

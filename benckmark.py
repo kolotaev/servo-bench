@@ -37,12 +37,12 @@ PROMPT = 'vagrant@servobench'
 CMDS = {
     'mem-usage': "sudo python -m ps_mem | awk '/%s/{print \"___\"$7$8\"___\"}'", # substitute process name
     'cpu-usage': "top -bn1 | awk '/%s/{ SUM += $9 } END { print \"___\"SUM\"___\" }'", # substitute process name
-    'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s -s wrk_report.lua',
+    'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s -s wrk_report.lua --timeout 60s',
     'cd-framework': 'cd /shared/%s',
     'docker-run': '../mule.sh -rk -s %d -l %d -p %d' % (SQL_SLEEP_MAX, LOOP_COUNT, POOL_SIZE)
 }
 
-REPORT_FILE = 'benchmark-results.md'
+REPORT_FILE_TEMPLATE = '_results/benchmark-results-%s-%dsec.md'
 
 REPORT_TEMPLATE = """
 ==========================
@@ -53,6 +53,7 @@ Results:
 | :---                            | :--- |
 | Framework                       | $framework |
 | Endpoint                        | /$endpoint  |
+| Endpoint sleep sec. (if applicable) | $endpoint_sleep  |
 | Requests/sec                    | $requests_per_second |
 | Req. Latency (Avg.)             | $latency |
 | Req. Latency (%'le - latency)   | $latency_percentiles |
@@ -125,8 +126,10 @@ def do_report(cpu_samples, mem_samples, **kwargs):
     kwargs['mem_samples'] = mem_samples
     kwargs['cpu_samples'] = cpu_samples
     kwargs['current_time'] = time.ctime()
+    kwargs['endpoint_sleep'] = SQL_SLEEP_MAX
     report = Template(REPORT_TEMPLATE).substitute(kwargs)
-    with open(REPORT_FILE, 'a') as f:
+    to_file = REPORT_FILE_TEMPLATE % (kwargs['endpoint'], SQL_SLEEP_MAX)
+    with open(to_file, 'a') as f:
         f.write(report)
 
 
@@ -134,6 +137,7 @@ def run(s, framework, endpoint):
     mem_samples = []
     cpu_samples = []
     wrk_cmd = CMDS['wrk'] % (RUN_TIME, endpoint)
+    wrk_warmup_cmd = CMDS['wrk'] % (30, endpoint)
     cd_cmd = CMDS['cd-framework'] % framework
     framework_processname = 'unknown'
 
@@ -178,12 +182,16 @@ def run(s, framework, endpoint):
     s.expect('Launching container')
     s.expect(PROMPT)
 
+    # Warm-up
+    print('Running wrk to warm-up...')
+    pexpect.runu(wrk_warmup_cmd, timeout=1000000)
+
     # start background sampling thread
     t = threading.Thread(target=partial(sample_it, framework_processname))
     t.start()
 
     # Run wrk benchmark
-    print('Running wrk...')
+    print('Running wrk benchmark...')
     res = pexpect.runu(wrk_cmd, timeout=1000000)
     for l in res.splitlines():
         print(l)
@@ -206,7 +214,7 @@ def run(s, framework, endpoint):
     bad_resps = m.group(1).strip() if m else '0'
 
     t.join(RUN_TIME + 30)
-    print('Reporting resource measurements during benchmark...')
+    print('Reporting measurements made during benchmark...')
     do_report(cpu_samples=cpu_samples,
               mem_samples=mem_samples,
               framework=framework,

@@ -73,6 +73,7 @@ venv
 # Reports
 runner-results*
 benchmark-results*
+/_results
 
 # For clojure leiningen
 target/

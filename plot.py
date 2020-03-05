@@ -31,7 +31,7 @@ def generate_data_for_chart(file):
                     bag[fr][endp] = []
                 bag[fr][endp].append({
                     'lat-50': float(re.search(r"\('50',\s?'(.*)'\), \('70", run).group(1)),
-                    'lat-90': float(re.search(r"\('99',\s?'(.*)'\), \('99\.9'", run).group(1)),
+                    'lat-99': float(re.search(r"\('99',\s?'(.*)'\), \('99\.9'", run).group(1)),
                     'reqs': round(float(re.search(r"Requests/sec.*\|(.+)\|", run).group(1))),
                     'cpu': round(float(re.search(r"CPU used \(mean\).*\|(.+)\|", run).group(1))),
                     'mem': round(float(re.search(r"Memory used \(mean\).*\|(.+)\|", run).group(1))),
@@ -59,12 +59,12 @@ def generate_all(in_file, outdir):
     # for e in ['/db', '/json']:
     for e in ['/db']:
         chart_it = partial(create_chart, generate_data_for_chart(in_file), os.path.join(outdir, e[1:]))
-        chart_it('Requests per second (1 sec. sleep)', endpoint=e, stat_name='reqs', legend='Requests', color='#6497b1')
+        chart_it('Requests per second', endpoint=e, stat_name='reqs', legend='Requests', color='#6497b1')
         chart_it('Memory usage', endpoint=e, stat_name='mem', legend='Mb', color='#dec3c3')
         chart_it('CPU usage', endpoint=e, stat_name='cpu', legend='%', color='#bbbbbb')
         chart_it('Failed requests', endpoint=e, stat_name='failed', legend='requests', color='#ff6f69')
         chart_it('Latency for 50-percentile', endpoint=e, stat_name='lat-50', legend='seconds', color='#3c2f2f')
-        chart_it('Latency for 90-percentile', endpoint=e, stat_name='lat-90', legend='seconds', color='#3385c6')
+        chart_it('Latency for 99-percentile', endpoint=e, stat_name='lat-99', legend='seconds', color='#3385c6')
 
 if __name__ == '__main__':
     generate_all(ARGS.file, ARGS.dir)
