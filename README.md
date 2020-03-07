@@ -16,7 +16,7 @@
     - [Scala. Play. Akka.](#scala-play-akka)
     - [Elixir. Phoenix. OTP.](#elixir-phoenix-otp)
     - [Elixir. Plug. OTP.](#elixir-plug-otp)
-    - [Ruby. Sinatra. Synchrony.](#ruby-sinatra-synchrony)
+    - [Ruby. Synchrony.](#ruby-synchrony)
     - [Lua. Openresty. Nginx.](#lua-openresty-nginx)
   - [Mule script](#mule-script)
 
@@ -125,10 +125,9 @@ With async PG driver.
 - [Erlang & OTP](https://www.erlang.org)
 
 
-### Ruby. Sinatra. Synchrony.
+### Ruby. Synchrony.
 
 - [Ruby](https://www.ruby-lang.org)
-- [Sinatra](http://sinatrarb.com)
 - [Synchrony](https://github.com/kyledrake/sinatra-synchrony)
 
 
