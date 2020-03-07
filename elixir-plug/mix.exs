@@ -6,14 +6,18 @@ defmodule Benchmarker.Mixfile do
      version: "0.0.1",
      elixir: "~> 1.8",
      deps: deps(),
-     aliases: [server: ["app.start", &server/1]]]
+     start_permanent: true
+    ]
   end
 
   # Configuration for the OTP application
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:cowboy, :plug, :logger]]
+    [
+      extra_applications: [:logger],
+      mod: {Benchmarker.Application, []}
+    ]
   end
 
   # Dependencies can be Hex packages:
@@ -29,16 +33,17 @@ defmodule Benchmarker.Mixfile do
     [
       {:plug_cowboy, "~> 2.0"},
       {:jason, "~> 1.1"},
-      {:postgrex, "~> 0.15"},
+      {:ecto_sql, "~> 3.0"},
+      {:postgrex, ">= 0.0.0"}
     ]
   end
 
-  defp server(_) do
-    port = String.to_integer( System.get_env("PORT") || "8080" )
+  # defp server(_) do
+  #   port = String.to_integer( System.get_env("PORT") || "8080" )
 
-    Mix.shell.info "Running Benchmarker on port #{port}"
-    {:ok, _} = Plug.Adapters.Cowboy.http Benchmarker, [], port: port
-    :code.delete(Access)
-    :timer.sleep(:infinity)
-  end
+  #   Mix.shell.info "Running Benchmarker on port #{port}"
+  #   {:ok, _} = Plug.Adapters.Cowboy.http Benchmarker, [], port: port
+  #   :code.delete(Access)
+  #   :timer.sleep(:infinity)
+  # end
 end

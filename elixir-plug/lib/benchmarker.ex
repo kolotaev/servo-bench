@@ -1,11 +1,9 @@
-defmodule Benchmarker do
+defmodule Benchmarker.Endpoints do
   use Plug.Router
   require Jason
-  require Postgrex
+  require Ecto
 
   @chars "ABCDEFGHIJKLMNOP" |> String.split("")
-
-  # {:ok, pid} = Postgrex.start_link(hostname: "127.0.0.1", username: "postgres", password: "root", database: "postgres")
 
   plug :match
   plug :dispatch
@@ -17,12 +15,14 @@ defmodule Benchmarker do
   get "/db" do
     {sleep, loop} = get_envs()
     q = "SELECT pg_sleep(#{rand_float() * sleep})"
-    # users = Enum.map(0..loop, fn -> new_user(true) end)
-    # q = Serv.User.run_heavy_query(sleep)
-    # res = Postgrex.query!(pid, q, [])
-    res = nil
-    users = []
-    render(conn, %{query: q, res: res, users: users})
+    res = Ecto.Adapters.SQL.query(Benchmarker.Repo, q)
+    users = Enum.map(0..loop, fn -> new_user(true) end)
+    render(conn, "tt")
+    # render(conn, %{query: q, res: res, users: users})
+  end
+
+  match _ do
+    send_resp(conn, 404, "<h1>Page Not Found</h1>")
   end
 
   defp render(conn, result) do
@@ -30,9 +30,13 @@ defmodule Benchmarker do
     send_resp(conn, 200, res)
   end
 
-  defp rand_float(), do: :rand.uniform()
+  defp rand_float() do
+    :rand.uniform()
+  end
 
-  defp rand_int(n), do: :rand.uniform(n)
+  defp rand_int(n) do
+    :rand.uniform(n)
+  end
 
   defp random_string(length) do
     # todo - why does it slow down performance so drastically?
@@ -56,11 +60,11 @@ defmodule Benchmarker do
   end
 
   defp get_envs() do
-    {sleep, _} = Integer.parse(System.get_env("SQL_SLEEP_MAX"))
+    {sleep, _} = Integer.parse(System.get_env("SQL_SLEEP_MAX") || "0")
     if is_nil(sleep) do
       sleep = 0
     end
-    {loop, _} = Integer.parse(System.get_env("LOOP_COUNT"))
+    {loop, _} = Integer.parse(System.get_env("LOOP_COUNT") || "0")
     if is_nil(loop) do
       loop = 0
     end

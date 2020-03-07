@@ -22,3 +22,16 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+
+config :logger, level: :error
+
+config :benchmarker, Benchmarker.Repo,
+  username: "postgres",
+  password: "root",
+  database: "postgres",
+  hostname: "127.0.0.1",
+  port: 5432,
+  pool_size: 20,
+  queue_target: 5000,
+  queue_interval: 5000,
+  log: :debug
