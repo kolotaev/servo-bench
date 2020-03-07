@@ -4,10 +4,10 @@ defmodule Benchmarker.Application do
   @moduledoc false
 
   use Application
+  require Logger
 
   def start(_type, _args) do
     children = [
-      {Registry, keys: :unique, name: Benchmarker.Registry},
       Benchmarker.Repo,
       {Plug.Cowboy,
        scheme: :http,
@@ -23,6 +23,8 @@ defmodule Benchmarker.Application do
          ]
        ]}
     ]
+
+    Logger.info("Starting application...")
 
     opts = [strategy: :one_for_one, name: Benchmarker.Supervisor]
     Supervisor.start_link(children, opts)

@@ -15,10 +15,9 @@ defmodule Benchmarker.Endpoints do
   get "/db" do
     {sleep, loop} = get_envs()
     q = "SELECT pg_sleep(#{rand_float() * sleep})"
-    res = Ecto.Adapters.SQL.query(Benchmarker.Repo, q)
-    users = Enum.map(0..loop, fn -> new_user(true) end)
-    render(conn, "tt")
-    # render(conn, %{query: q, res: res, users: users})
+    {_, res} = Ecto.Adapters.SQL.query(Benchmarker.Repo, q)
+    users = Enum.map(0..loop, fn _ -> new_user(true) end)
+    render(conn, %{query: q, res: res.num_rows, users: users})
   end
 
   match _ do
@@ -60,14 +59,8 @@ defmodule Benchmarker.Endpoints do
   end
 
   defp get_envs() do
-    {sleep, _} = Integer.parse(System.get_env("SQL_SLEEP_MAX") || "0")
-    if is_nil(sleep) do
-      sleep = 0
-    end
-    {loop, _} = Integer.parse(System.get_env("LOOP_COUNT") || "0")
-    if is_nil(loop) do
-      loop = 0
-    end
+    {sleep, _} = Application.fetch_env!(:benchmarker, :sleep_max)
+    {loop, _} = Application.fetch_env!(:benchmarker, :loop_count)
     {sleep, loop}
   end
 

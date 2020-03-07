@@ -25,13 +25,20 @@ use Mix.Config
 
 config :logger, level: :error
 
+
+{poolsize, _} = Integer.parse(System.get_env("POOL_SIZE") || "1")
+
 config :benchmarker, Benchmarker.Repo,
   username: "postgres",
   password: "root",
   database: "postgres",
   hostname: "127.0.0.1",
   port: 5432,
-  pool_size: 20,
+  pool_size: poolsize,
   queue_target: 5000,
   queue_interval: 5000,
-  log: :debug
+  log: false
+
+config :benchmarker,
+  sleep_max: Integer.parse(System.get_env("SQL_SLEEP_MAX") || "0"),
+  loop_count: Integer.parse(System.get_env("LOOP_COUNT") || "0")

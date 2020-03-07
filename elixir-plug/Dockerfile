@@ -15,4 +15,4 @@ RUN mix deps.compile
 RUN mix release
 
 # launch server
-CMD ["elixir", "-pa", "_build/prod/consolidated", "-S", "mix", "server"]
+CMD ["./_build/prod/rel/benchmarker/bin/benchmarker", "start"]

@@ -2,11 +2,12 @@ defmodule Benchmarker.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :benchmarker,
-     version: "0.0.1",
-     elixir: "~> 1.8",
-     deps: deps(),
-     start_permanent: true
+    [
+      app: :benchmarker,
+      version: "0.0.1",
+      elixir: "~> 1.8",
+      deps: deps(),
+      start_permanent: true
     ]
   end
 
