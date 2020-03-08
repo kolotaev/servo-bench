@@ -26,6 +26,7 @@ use Mix.Config
 config :logger, level: :error
 
 
+# todo - fix it. Elixir resolves env at compile time!
 {poolsize, _} = Integer.parse(System.get_env("POOL_SIZE") || "400")
 
 config :benchmarker, Benchmarker.Repo,
