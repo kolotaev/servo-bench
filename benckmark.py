@@ -108,7 +108,7 @@ def selector(typ, proposed):
 
 def ask_for_suites():
     dirs = [os.path.basename(root) for root, _, filenames in os.walk(os.getcwd())
-            for filename in filenames if filename == 'Dockerfile']
+            for filename in filenames if filename == 'processname.txt']
     apis = ['json', 'db']
     return list(itertools.product(selector('framework', dirs), selector('endpoint', apis)))
 

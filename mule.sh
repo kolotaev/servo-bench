@@ -78,7 +78,7 @@ function build_all_images() {
         echo "current dir is ${root}"
         exit
     fi
-    image_dirs=$(find . -type f -name 'Dockerfile' | sed -r 's|/[^/]+$||' | sort | uniq)
+    image_dirs=$(find . -type f -name 'processname.txt' | sed -r 's|/[^/]+$||' | sort | uniq)
     for f in $image_dirs; do
         echo "cd into ${f}"
         cd "$f"
