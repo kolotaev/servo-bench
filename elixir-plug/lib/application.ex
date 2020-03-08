@@ -25,6 +25,7 @@ defmodule Benchmarker.Application do
     ]
 
     Logger.info("Starting application...")
+    :ets.new(:cache, [:set, :public, :named_table])
 
     opts = [strategy: :one_for_one, name: Benchmarker.Supervisor]
     Supervisor.start_link(children, opts)

@@ -3,8 +3,6 @@ defmodule Benchmarker.Endpoints do
   require Jason
   require Ecto
 
-  @chars "ABCDEFGHIJKLMNOP" |> String.split("")
-
   plug :match
   plug :dispatch
 
@@ -13,7 +11,8 @@ defmodule Benchmarker.Endpoints do
   end
 
   get "/db" do
-    {sleep, loop} = get_envs()
+    sleep = get_env("SQL_SLEEP_MAX")
+    loop = get_env("LOOP_COUNT")
     q = "SELECT pg_sleep(#{rand_float() * sleep})"
     {_, res} = Ecto.Adapters.SQL.query(Benchmarker.Repo, q)
     users = Enum.map(0..loop, fn _ -> new_user(true) end)
@@ -39,8 +38,8 @@ defmodule Benchmarker.Endpoints do
 
   defp random_string(length) do
     # todo - why does it slow down performance so drastically?
-    @chars |> Enum.shuffle |> Enum.take(length) |> to_string
-    # "abcdef"
+    # "ABCDEFGHIJKLMNOP" |> String.split("") |> Enum.shuffle |> Enum.take(length) |> to_string
+    "abcdef"
   end
 
   defp new_user(has_friend?) do
@@ -58,10 +57,22 @@ defmodule Benchmarker.Endpoints do
     }
   end
 
-  defp get_envs() do
-    {sleep, _} = Application.fetch_env!(:benchmarker, :sleep_max)
-    {loop, _} = Application.fetch_env!(:benchmarker, :loop_count)
-    {sleep, loop}
+  defp once(key, f) do
+    fn ->
+      case :ets.lookup(:cache, key) do
+        [{^key, val}] ->
+          val
+        [] ->
+          val = f.()
+          :ets.insert(:cache, {key, val})
+          val
+      end
+    end
+  end
+
+  defp get_env(k) do
+    fun = once(k, fn -> elem(Integer.parse(System.get_env(k) || "0"), 0) end)
+    fun.()
   end
 
 end
