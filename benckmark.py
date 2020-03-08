@@ -37,7 +37,7 @@ PROMPT = 'vagrant@servobench'
 CMDS = {
     'mem-usage': "sudo python -m ps_mem | awk '/%s/{print \"___\"$7$8\"___\"}'", # substitute process name
     'cpu-usage': "top -bn1 | awk '/%s/{ SUM += $9 } END { print \"___\"SUM\"___\" }'", # substitute process name
-    'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s -s wrk_report.lua --timeout 60s',
+    'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s -s wrk_report.lua --timeout 10s',
     'cd-framework': 'cd /shared/%s',
     'docker-run': '../mule.sh -rk -s %d -l %d -p %d' % (SQL_SLEEP_MAX, LOOP_COUNT, POOL_SIZE)
 }

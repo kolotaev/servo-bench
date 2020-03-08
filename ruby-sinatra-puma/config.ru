@@ -11,8 +11,14 @@ POOL_SIZE = (ENV.fetch 'POOL_SIZE', 1).to_i
 require 'active_record'
 
 ActiveRecord::Base.establish_connection(
-  :adapter => 'sqlite3',
-  :database =>  'sinatra_application.sqlite3.db'
+  adapter: 'postgresql',
+  database: 'postgres',
+  host: '127.0.0.1',
+  port: 5432,
+  username: 'postgres',
+  password: 'root',
+  # todo - get from env
+  pool: 400,
 )
 
 run Benchy

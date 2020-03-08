@@ -1,11 +1,8 @@
 require 'json'
 
 require 'sinatra'
-require 'activerecord'
+require 'active_record'
 
-
-class UserModel
-end
 
 def random_string(length)
   rand(36**length).to_s(36)
@@ -15,7 +12,7 @@ def create_user
   User.new(friend: User.new)
 end
 
-class User < ActiveRecord::Base
+class User
   def initialize(opts = {})
     @name = opts.fetch(:name, random_string(10))
     @surname = opts.fetch(:surname, random_string(3))
@@ -52,6 +49,16 @@ class Benchy < Sinatra::Base
 
   get '/json' do
     create_user.to_json
+  end
+
+  get '/db' do
+    qry = "SELECT pg_sleep(#{Random.rand(SLEEP_MAX)})"
+    st = ActiveRecord::Base.connection.execute(qry)
+    users = []
+    LOOP_COUNT.times do
+      users << create_user
+    end
+    { db_query: qry, data: users, result: st.first }.to_json
   end
 
   run! if app_file == $0
