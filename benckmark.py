@@ -63,9 +63,7 @@ Results:
 | Memory used samples, Mib        | $mem_samples |
 | CPU used (mean), %              | $cpu_used |
 | CPU used samples, %             | $cpu_samples |
-| Wrk test run time               | $time  |
-| Wrk N connections               | $connections  |
-| Wrk N threads                   | $threads  |
+| Test command                    | $test_command  |
 | Data read                       | $data_read  |
 ==========================
 """
@@ -196,11 +194,6 @@ def run(s, framework, endpoint):
     for l in res.splitlines():
         print(l)
 
-    m = re.search('Running(.+?)test', res)
-    run_time = m.group(1).strip() if m else 'unknown'
-    m = re.search('(\d+).*threads.*?(\d+).*connections', res)
-    run_threads = m.group(1).strip() if m else 'unknown'
-    run_connections = m.group(2).strip() if m else 'unknown'
     m = re.search('Socket errors.*timeout.*?(\d+)', res)
     run_timeout_number = int(m.group(1).strip()) if m else 'unknown'
     m = re.search(', (.+?) read', res)
@@ -219,9 +212,7 @@ def run(s, framework, endpoint):
               mem_samples=mem_samples,
               framework=framework,
               endpoint=endpoint,
-              time=run_time,
-              connections=run_connections,
-              threads=run_threads,
+              test_command=wrk_cmd,
               timeouted=run_timeout_number,
               data_read=data_read,
               requests_per_second=run_req_sec,
