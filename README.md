@@ -29,6 +29,8 @@
   wrk -t12 -c400 -d300s http://vagrant-machine:8080/json
   ```
 
+  Detailed results can be found [here](./_results/benchmark-results-json-2sec.md).
+
   ![rps](_images/json/Requests_per_second.png)
   ![latency50](_images/json/Latency_for_50-percentile.png)
   ![latency99](_images/json/Latency_for_99-percentile.png)
@@ -40,6 +42,8 @@
   ```bash
   wrk -t12 -c400 -d240s http://vagrant-machine:8080/db -s wrk_report.lua --timeout 10s
   ```
+
+  Detailed results can be found [here](./_results/benchmark-results-db-2sec.md).
 
   ![rps](_images/db/Requests_per_second.png)
   ![latency50](_images/db/Latency_for_50-percentile.png)
