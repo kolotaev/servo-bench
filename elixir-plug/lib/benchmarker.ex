@@ -15,7 +15,8 @@ defmodule Benchmarker.Endpoints do
     loop = get_env("LOOP_COUNT")
     q = "SELECT pg_sleep(#{rand_float() * sleep})"
     {_, res} = Ecto.Adapters.SQL.query(Benchmarker.Repo, q)
-    users = Enum.map(0..loop, fn _ -> new_user(true) end)
+    loop_int = round(loop)
+    users = Enum.map(0..loop_int, fn _ -> new_user(true) end)
     render(conn, %{query: q, res: res.num_rows, users: users})
   end
 
@@ -71,7 +72,7 @@ defmodule Benchmarker.Endpoints do
   end
 
   defp get_env(k) do
-    fun = once(k, fn -> elem(Integer.parse(System.get_env(k) || "0"), 0) end)
+    fun = once(k, fn -> elem(Float.parse(System.get_env(k) || "0"), 0.0) end)
     fun.()
   end
 

@@ -16,9 +16,9 @@ defmodule Serv.ServController do
   end
 
   defp get_envs() do
-    {sleep, _} = Integer.parse(System.get_env("SQL_SLEEP_MAX"))
+    {sleep, _} = Float.parse(System.get_env("SQL_SLEEP_MAX"))
     if is_nil(sleep) do
-      sleep = 0
+      sleep = 0.0
     end
     {loop, _} = Integer.parse(System.get_env("LOOP_COUNT"))
     if is_nil(loop) do

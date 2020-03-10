@@ -19,7 +19,7 @@ import pgpool
 
 HOST = '0.0.0.0'
 PORT = 8080
-SLEEP_MAX = float(os.environ.get('SQL_SLEEP_MAX', 0))
+SLEEP_MAX = float(os.environ.get('SQL_SLEEP_MAX', 0.0))
 LOOP_COUNT = int(os.environ.get('LOOP_COUNT', 0))
 POOL_SIZE = int(os.environ.get('POOL_SIZE', 1))
 
@@ -62,7 +62,7 @@ app = Flask(__name__)
 app.json_encoder = MyJSONEncoder
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
-app.logger.error('Using SQL_SLEEP_MAX = %i seconds; LOOP_COUNT = %i; POOL_SIZE = %i' % (SLEEP_MAX, LOOP_COUNT, POOL_SIZE))
+app.logger.error('Using SQL_SLEEP_MAX = %f seconds; LOOP_COUNT = %i; POOL_SIZE = %i' % (SLEEP_MAX, LOOP_COUNT, POOL_SIZE))
 try:
     dsn = 'dbname=postgres user=postgres password=root host=127.0.0.1 '
     pool = pgpool.PostgresConnectionPool(dsn=dsn, maxsize=POOL_SIZE)

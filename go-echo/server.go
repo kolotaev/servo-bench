@@ -14,7 +14,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const SLEEP_MAX_DEFAULT = 0 // seconds
+const SLEEP_MAX_DEFAULT = float64(0) // seconds
 const LOOP_COUNT_DEFAULT = 0
 
 type User struct {
@@ -68,16 +68,16 @@ func createUser() *User {
 	}
 }
 
-func getBenchmarkParams() (int, int) {
+func getBenchmarkParams() (float64, int) {
 	sleep := SLEEP_MAX_DEFAULT
 	loopCount := LOOP_COUNT_DEFAULT
 
-	i, err := strconv.Atoi(os.Getenv("SQL_SLEEP_MAX"))
+	f, err := strconv.ParseFloat(os.Getenv("SQL_SLEEP_MAX"), 64)
 	if err == nil {
-		sleep = i
+		sleep = f
 	}
 
-	i, err = strconv.Atoi(os.Getenv("LOOP_COUNT"))
+	i, err := strconv.Atoi(os.Getenv("LOOP_COUNT"))
 	if err == nil {
 		loopCount = i
 	}
@@ -88,7 +88,7 @@ func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	sleep, loopCount := getBenchmarkParams()
-	log.Printf("Using SQL_SLEEP_MAX = %d seconds; LOOP_COUNT = %d\n", sleep, loopCount)
+	log.Printf("Using SQL_SLEEP_MAX = %f seconds; LOOP_COUNT = %d\n", sleep, loopCount)
 
 	// Connect to DB
 	connStr := "postgres://postgres:root@127.0.0.1/postgres?sslmode=disable"
@@ -114,7 +114,7 @@ func main() {
 		result := make(map[string]interface{})
 
 		// Do a long DB I/O call
-		sleepRand := float32(rand.Intn(sleep*1000)) / 1000
+		sleepRand := rand.Float64() * sleep
 		queryString := fmt.Sprintf("SELECT pg_sleep(%f)", sleepRand)
 		rows, err := db.Query(queryString)
 		defer rows.Close()

@@ -7,7 +7,7 @@ const PORT = 8080;
 const HOST = '0.0.0.0';
 
 
-const sqlMaxSleep = parseInt(process.env.SQL_SLEEP_MAX) || 0; // seconds
+const sqlMaxSleep = parseFloat(process.env.SQL_SLEEP_MAX) || 0.0; // seconds
 const loopCount = parseInt(process.env.LOOP_COUNT) || 0;
 const poolSize = parseInt(process.env.POOL_SIZE) || 1;
 

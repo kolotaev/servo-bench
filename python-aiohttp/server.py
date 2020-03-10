@@ -11,7 +11,7 @@ import asyncpg
 
 HOST = '0.0.0.0'
 PORT = 8080
-SLEEP_MAX = float(os.environ.get('SQL_SLEEP_MAX', 0))
+SLEEP_MAX = float(os.environ.get('SQL_SLEEP_MAX', 0.0))
 LOOP_COUNT = int(os.environ.get('LOOP_COUNT', 0))
 POOL_SIZE = int(os.environ.get('POOL_SIZE', 1))
 DSN = 'postgres://postgres:root@127.0.0.1:5432/postgres'

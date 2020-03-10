@@ -16,7 +16,7 @@ import repositories.{PersonRepository}
 class MainController @Inject()(cc: ControllerComponents, repository: PersonRepository)
   extends AbstractController(cc) {
 
-  val sqlMaxSleep = Properties.envOrElse("SQL_SLEEP_MAX", "0").toInt // seconds
+  val sqlMaxSleep = Properties.envOrElse("SQL_SLEEP_MAX", "0.0").toFloat // seconds
   val loopCount = Properties.envOrElse("LOOP_COUNT", "0").toInt
 
   def index() = Action { implicit request =>
