@@ -196,3 +196,113 @@ Results:
 | Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/json -s wrk_report.lua --timeout 10s  |
 | Data read                       | 600.79MB  |
 ==========================
+
+==========================
+Date: Tue Mar 10 12:00:26 2020
+Results:
+
+| Param                           | Value |
+| :---                            | :--- |
+| Framework                       | clojure-ring-jetty |
+| Endpoint                        | /json  |
+| Endpoint sleep sec. (if applicable) | 2  |
+| Requests/sec                    | 1448.08 |
+| Req. Latency (Avg.)             | 167.02ms |
+| Req. Latency (%'le - latency)   | [('50', '0.163'), ('70', '0.201'), ('90', '0.282'), ('99', '0.503'), ('99.9', '0.978'), ('99.999', '6.128')] |
+| 5xx/4xx responses               | 0 |
+| N timeout-ed                    | 0  |
+| Memory used (mean), Mib         | 143 |
+| Memory used samples, Mib        | [143, 143, 143, 143, 143] |
+| CPU used (mean), %              | 92 |
+| CPU used samples, %             | [99.9, 93.8, 87.5, 87.5, 93.8] |
+| Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/json -s wrk_report.lua --timeout 10s  |
+| Data read                       | 147.98MB  |
+==========================
+
+==========================
+Date: Tue Mar 10 12:36:30 2020
+Results:
+
+| Param                           | Value |
+| :---                            | :--- |
+| Framework                       | go-echo |
+| Endpoint                        | /json  |
+| Endpoint sleep sec. (if applicable) | 2  |
+| Requests/sec                    | 4837.93 |
+| Req. Latency (Avg.)             | 48.54ms |
+| Req. Latency (%'le - latency)   | [('50', '0.051'), ('70', '0.056'), ('90', '0.063'), ('99', '0.082'), ('99.9', '0.111'), ('99.999', '0.146')] |
+| 5xx/4xx responses               | 0 |
+| N timeout-ed                    | 0  |
+| Memory used (mean), Mib         | 13 |
+| Memory used samples, Mib        | [13, 13, 13, 13, 13] |
+| CPU used (mean), %              | 94 |
+| CPU used samples, %             | [99.9, 87.5, 93.8, 93.8, 93.8] |
+| Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/json -s wrk_report.lua --timeout 10s  |
+| Data read                       | 561.96MB  |
+==========================
+
+==========================
+Date: Tue Mar 10 14:27:22 2020
+Results:
+
+| Param                           | Value |
+| :---                            | :--- |
+| Framework                       | clojure-undertow |
+| Endpoint                        | /json  |
+| Endpoint sleep sec. (if applicable) | 2  |
+| Requests/sec                    | 1686.77 |
+| Req. Latency (Avg.)             | 152.03ms |
+| Req. Latency (%'le - latency)   | [('50', '0.137'), ('70', '0.151'), ('90', '0.196'), ('99', '0.356'), ('99.9', '4.857'), ('99.999', '7.300')] |
+| 5xx/4xx responses               | 0 |
+| N timeout-ed                    | 0  |
+| Memory used (mean), Mib         | 160 |
+| Memory used samples, Mib        | [159, 159, 160, 161, 161] |
+| CPU used (mean), %              | 95 |
+| CPU used samples, %             | [93.8, 93.8, 99.9, 93.8, 93.8] |
+| Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/json -s wrk_report.lua --timeout 10s  |
+| Data read                       | 169.67MB  |
+==========================
+
+==========================
+Date: Tue Mar 10 15:57:09 2020
+Results:
+
+| Param                           | Value |
+| :---                            | :--- |
+| Framework                       | elixir-phoenix |
+| Endpoint                        | /json  |
+| Endpoint sleep sec. (if applicable) | 2  |
+| Requests/sec                    | 1535.64 |
+| Req. Latency (Avg.)             | 154.63ms |
+| Req. Latency (%'le - latency)   | [('50', '0.153'), ('70', '0.155'), ('90', '0.168'), ('99', '0.206'), ('99.9', '0.279'), ('99.999', '0.355')] |
+| 5xx/4xx responses               | 0 |
+| N timeout-ed                    | 0  |
+| Memory used (mean), Mib         | 67 |
+| Memory used samples, Mib        | [69, 66, 66, 66, 66] |
+| CPU used (mean), %              | 97 |
+| CPU used samples, %             | [99.9, 93.3, 93.8, 99.9, 99.9] |
+| Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/json -s wrk_report.lua --timeout 10s  |
+| Data read                       | 181.97MB  |
+==========================
+
+==========================
+Date: Tue Mar 10 16:28:17 2020
+Results:
+
+| Param                           | Value |
+| :---                            | :--- |
+| Framework                       | python-aiohttp |
+| Endpoint                        | /json  |
+| Endpoint sleep sec. (if applicable) | 2  |
+| Requests/sec                    | 2145.71 |
+| Req. Latency (Avg.)             | 110.18ms |
+| Req. Latency (%'le - latency)   | [('50', '0.110'), ('70', '0.111'), ('90', '0.117'), ('99', '0.150'), ('99.9', '0.223'), ('99.999', '0.371')] |
+| 5xx/4xx responses               | 0 |
+| N timeout-ed                    | 0  |
+| Memory used (mean), Mib         | 33 |
+| Memory used samples, Mib        | [33, 33, 33, 33, 33] |
+| CPU used (mean), %              | 95 |
+| CPU used samples, %             | [93.3, 99.9, 93.8, 87.5, 99.9] |
+| Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/json -s wrk_report.lua --timeout 10s  |
+| Data read                       | 240.89MB  |
+==========================

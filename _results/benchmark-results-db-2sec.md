@@ -195,3 +195,91 @@ Results:
 | Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/db -s wrk_report.lua --timeout 10s  |
 | Data read                       | 1.49GB  |
 ==========================
+
+==========================
+Date: Tue Mar 10 12:09:09 2020
+Results:
+
+| Param                           | Value |
+| :---                            | :--- |
+| Framework                       | clojure-ring-jetty |
+| Endpoint                        | /db  |
+| Endpoint sleep sec. (if applicable) | 2  |
+| Requests/sec                    | 33.08 |
+| Req. Latency (Avg.)             | 4.36s |
+| Req. Latency (%'le - latency)   | [('50', '4.043'), ('70', '6.391'), ('90', '8.632'), ('99', '9.876'), ('99.9', '9.981'), ('99.999', '9.998')] |
+| 5xx/4xx responses               | 0 |
+| N timeout-ed                    | 1964  |
+| Memory used (mean), Mib         | 206 |
+| Memory used samples, Mib        | [197, 208, 201, 210, 214] |
+| CPU used (mean), %              | 93 |
+| CPU used samples, %             | [94.1, 94.1, 94.1, 88.2, 94.1] |
+| Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/db -s wrk_report.lua --timeout 10s  |
+| Data read                       | 228.72MB  |
+==========================
+
+==========================
+Date: Tue Mar 10 12:44:10 2020
+Results:
+
+| Param                           | Value |
+| :---                            | :--- |
+| Framework                       | go-echo |
+| Endpoint                        | /db  |
+| Endpoint sleep sec. (if applicable) | 2  |
+| Requests/sec                    | 225.52 |
+| Req. Latency (Avg.)             | 1.04s |
+| Req. Latency (%'le - latency)   | [('50', '1.042'), ('70', '1.443'), ('90', '1.849'), ('99', '2.108'), ('99.9', '2.510'), ('99.999', '2.945')] |
+| 5xx/4xx responses               | 0 |
+| N timeout-ed                    | 0  |
+| Memory used (mean), Mib         | 29 |
+| Memory used samples, Mib        | [28, 29, 29, 30] |
+| CPU used (mean), %              | 46 |
+| CPU used samples, %             | [44.4, 47.1, 50.0, 41.2, 47.1] |
+| Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/db -s wrk_report.lua --timeout 10s  |
+| Data read                       | 1.94GB  |
+==========================
+
+==========================
+Date: Tue Mar 10 14:34:37 2020
+Results:
+
+| Param                           | Value |
+| :---                            | :--- |
+| Framework                       | clojure-undertow |
+| Endpoint                        | /db  |
+| Endpoint sleep sec. (if applicable) | 2  |
+| Requests/sec                    | 29.09 |
+| Req. Latency (Avg.)             | 5.58s |
+| Req. Latency (%'le - latency)   | [('50', '5.628'), ('70', '7.115'), ('90', '8.850'), ('99', '9.870'), ('99.9', '9.986'), ('99.999', '9.999')] |
+| 5xx/4xx responses               | 0 |
+| N timeout-ed                    | 1512  |
+| Memory used (mean), Mib         | 217 |
+| Memory used samples, Mib        | [211, 216, 211, 223, 224] |
+| CPU used (mean), %              | 78 |
+| CPU used samples, %             | [68.8, 81.2, 76.5, 82.4, 81.2] |
+| Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/db -s wrk_report.lua --timeout 10s  |
+| Data read                       | 201.26MB  |
+==========================
+
+==========================
+Date: Tue Mar 10 16:44:54 2020
+Results:
+
+| Param                           | Value |
+| :---                            | :--- |
+| Framework                       | python-aiohttp |
+| Endpoint                        | /db  |
+| Endpoint sleep sec. (if applicable) | 2  |
+| Requests/sec                    | 70.94 |
+| Req. Latency (Avg.)             | 3.30s |
+| Req. Latency (%'le - latency)   | [('50', '3.295'), ('70', '3.737'), ('90', '4.267'), ('99', '5.254'), ('99.9', '5.861'), ('99.999', '6.961')] |
+| 5xx/4xx responses               | 0 |
+| N timeout-ed                    | 0  |
+| Memory used (mean), Mib         | 71 |
+| Memory used samples, Mib        | [65, 68, 71, 73, 77] |
+| CPU used (mean), %              | 83 |
+| CPU used samples, %             | [72.2, 88.9, 82.4, 84.2, 88.2] |
+| Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/db -s wrk_report.lua --timeout 10s  |
+| Data read                       | 546.73MB  |
+==========================

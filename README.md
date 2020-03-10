@@ -26,7 +26,7 @@
 
 - Simple random tiny JSON response.
   ```bash
-  wrk -t12 -c400 -d300s http://vagrant-machine:8080/json
+  wrk -t12 -c400 -d240s http://vagrant-machine:8080/json --timeout 10s
   ```
 
   Detailed results can be found [here](./_results/benchmark-results-json-2sec.md).
@@ -40,7 +40,7 @@
 - Postgres DB call that does `sleep random(2 sec)` mimicking random long queries and random js response
   generated 100 times to simulate post-processing.
   ```bash
-  wrk -t12 -c400 -d240s http://vagrant-machine:8080/db -s wrk_report.lua --timeout 10s
+  wrk -t12 -c400 -d240s http://vagrant-machine:8080/db --timeout 10s
   ```
 
   Detailed results can be found [here](./_results/benchmark-results-db-2sec.md).

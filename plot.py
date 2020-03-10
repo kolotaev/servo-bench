@@ -51,6 +51,7 @@ def create_chart(data, outdir, name, endpoint='/db', stat_name='reqs', legend='R
     plt.xlabel(legend)
     plt.title(name)
     plt.subplots_adjust(left=0.27)
+    plt.gca().spines['right'].set_visible(False)
     plt.savefig(os.path.join(outdir, name.replace(' ', '_') + '.png'), transparent=False)
     plt.cla()
     plt.clf()
@@ -61,12 +62,12 @@ def generate_all(in_file, outdir):
         raise 'No endpoint found in the filename!'
     e = '/' + m.group()
     chart_it = partial(create_chart, generate_data_for_chart(in_file), os.path.join(outdir, e[1:]))
-    chart_it('Requests per second', endpoint=e, stat_name='reqs', legend='Requests', color='#6497b1')
+    chart_it('Requests per second', endpoint=e, stat_name='reqs', legend='Requests', color='#ffe084')
     chart_it('Memory usage', endpoint=e, stat_name='mem', legend='Mb', color='#dec3c3')
     chart_it('CPU usage', endpoint=e, stat_name='cpu', legend='%', color='#bbbbbb')
     chart_it('Failed requests', endpoint=e, stat_name='failed', legend='requests', color='#ff6f69')
     chart_it('Latency for 50-percentile', endpoint=e, stat_name='lat-50', legend='seconds', color='#3c2f2f')
-    chart_it('Latency for 99-percentile', endpoint=e, stat_name='lat-99', legend='seconds', color='#3385c6')
+    chart_it('Latency for 99-percentile', endpoint=e, stat_name='lat-99', legend='seconds', color='#9F8170')
 
 if __name__ == '__main__':
     generate_all(ARGS.file, ARGS.dir)
