@@ -29,12 +29,19 @@
   wrk -t12 -c400 -d300s http://vagrant-machine:8080/json
   ```
 
-- Postgres DB call that does `sleep random(2 sec)` mimicking random long queries.
+  ![rps](_images/json/Requests_per_second.png)
+  ![latency50](_images/json/Latency_for_50-percentile.png)
+  ![latency99](_images/json/Latency_for_99-percentile.png)
+  ![mem_used](_images/json/Memory_usage.png)
+  ![cpu_used](_images/json/CPU_usage.png)
+
+- Postgres DB call that does `sleep random(2 sec)` mimicking random long queries and random js response
+  generated 100 times to simulate post-processing.
   ```bash
-  wrk -t12 -c400 -d300s http://vagrant-machine:8080/db
+  wrk -t12 -c400 -d240s http://vagrant-machine:8080/db -s wrk_report.lua --timeout 10s
   ```
 
-  ![rps](_images/db/Requests_per_second_(1_sec._sleep).png)
+  ![rps](_images/db/Requests_per_second.png)
   ![latency50](_images/db/Latency_for_50-percentile.png)
   ![latency99](_images/db/Latency_for_99-percentile.png)
   ![mem_used](_images/db/Memory_usage.png)

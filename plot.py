@@ -45,7 +45,7 @@ def create_chart(data, outdir, name, endpoint='/db', stat_name='reqs', legend='R
     frs = list(map(itemgetter('fr'), xy))
     y = list(map(itemgetter('res'), xy))
     for i, v in enumerate(y):
-        plt.text(v + 3, i + 0, v)
+        plt.text(v + (v * 0.01), i - 0.1, v)
     plt.barh(frs, y, color=color)
     plt.autoscale()
     plt.xlabel(legend)
@@ -56,15 +56,17 @@ def create_chart(data, outdir, name, endpoint='/db', stat_name='reqs', legend='R
     plt.clf()
 
 def generate_all(in_file, outdir):
-    # for e in ['/db', '/json']:
-    for e in ['/db']:
-        chart_it = partial(create_chart, generate_data_for_chart(in_file), os.path.join(outdir, e[1:]))
-        chart_it('Requests per second', endpoint=e, stat_name='reqs', legend='Requests', color='#6497b1')
-        chart_it('Memory usage', endpoint=e, stat_name='mem', legend='Mb', color='#dec3c3')
-        chart_it('CPU usage', endpoint=e, stat_name='cpu', legend='%', color='#bbbbbb')
-        chart_it('Failed requests', endpoint=e, stat_name='failed', legend='requests', color='#ff6f69')
-        chart_it('Latency for 50-percentile', endpoint=e, stat_name='lat-50', legend='seconds', color='#3c2f2f')
-        chart_it('Latency for 99-percentile', endpoint=e, stat_name='lat-99', legend='seconds', color='#3385c6')
+    m = re.search(r'db|json', in_file)
+    if not m:
+        raise 'No endpoint found in the filename!'
+    e = '/' + m.group()
+    chart_it = partial(create_chart, generate_data_for_chart(in_file), os.path.join(outdir, e[1:]))
+    chart_it('Requests per second', endpoint=e, stat_name='reqs', legend='Requests', color='#6497b1')
+    chart_it('Memory usage', endpoint=e, stat_name='mem', legend='Mb', color='#dec3c3')
+    chart_it('CPU usage', endpoint=e, stat_name='cpu', legend='%', color='#bbbbbb')
+    chart_it('Failed requests', endpoint=e, stat_name='failed', legend='requests', color='#ff6f69')
+    chart_it('Latency for 50-percentile', endpoint=e, stat_name='lat-50', legend='seconds', color='#3c2f2f')
+    chart_it('Latency for 99-percentile', endpoint=e, stat_name='lat-99', legend='seconds', color='#3385c6')
 
 if __name__ == '__main__':
     generate_all(ARGS.file, ARGS.dir)
