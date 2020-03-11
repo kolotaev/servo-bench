@@ -37,19 +37,35 @@
   ![mem_used](_images/json/Memory_usage.png)
   ![cpu_used](_images/json/CPU_usage.png)
 
+
 - Postgres DB call that does `sleep random(2 sec)` mimicking random long queries and random js response
-  generated 100 times to simulate post-processing.
+  generated 100 times to simulate post-processing. DB pool size is 400.
   ```bash
   wrk -t12 -c400 -d240s http://vagrant-machine:8080/db --timeout 10s
   ```
 
   Detailed results can be found [here](./_results/benchmark-results-db-2sec.md).
 
-  ![rps](_images/db/Requests_per_second.png)
-  ![latency50](_images/db/Latency_for_50-percentile.png)
-  ![latency99](_images/db/Latency_for_99-percentile.png)
-  ![mem_used](_images/db/Memory_usage.png)
-  ![cpu_used](_images/db/CPU_usage.png)
+  ![rps](_images/db2/Requests_per_second.png)
+  ![latency50](_images/db2/Latency_for_50-percentile.png)
+  ![latency99](_images/db2/Latency_for_99-percentile.png)
+  ![mem_used](_images/db2/Memory_usage.png)
+  ![cpu_used](_images/db2/CPU_usage.png)
+
+
+- Postgres DB call that does `sleep count(*)` mimicking random fast queries and random js response
+  generated 100 times to simulate post-processing. DB pool size is 400.
+  ```bash
+  wrk -t12 -c400 -d240s http://vagrant-machine:8080/db --timeout 10s
+  ```
+
+  Detailed results can be found [here](./_results/benchmark-results-db-0.100000sec.md).
+
+  ![rps](_images/db01/Requests_per_second.png)
+  ![latency50](_images/db01/Latency_for_50-percentile.png)
+  ![latency99](_images/db01/Latency_for_99-percentile.png)
+  ![mem_used](_images/db01/Memory_usage.png)
+  ![cpu_used](_images/db01/CPU_usage.png)
 
 ## Frameworks
 
