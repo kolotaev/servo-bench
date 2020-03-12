@@ -74,11 +74,17 @@ app.get('/json', (req, res) => {
 
 app.get('/db', (req, res) => {
     // Make a DB call
-    var randSleep = Math.random() * sqlMaxSleep;
-    var qry = `SELECT pg_sleep(${randSleep})`;
+    var qry = "";
+    if (sqlMaxSleep == 0) {
+      qry = "SELECT count(*) FROM pg_catalog.pg_user"
+    } else {
+      var randSleep = Math.random() * sqlMaxSleep;
+      qry = `SELECT pg_sleep(${randSleep})`;
+    }
     pool.query(qry, (err, result) => {
         if (err) {
             console.warn(err);
+            res.status(500).json(err);
         }
 
         // Create some CPU and RAM load
@@ -90,6 +96,7 @@ app.get('/db', (req, res) => {
         var resultData = {
             "db-query": qry,
             "data": users,
+            "result": result,
         };
 
         res.json(resultData);

@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(description='Run plotting.')
 parser.add_argument('-f', '--file', nargs='?', type=str, default='benchmark-results.md',
-                    help='file with results of a benchmark (default: %(default)d)')
+                    help='file with results of a benchmark (default: %(default)s)')
 parser.add_argument('-d', '--dir', nargs='?', type=str, default='_images',
-                    help='output dir (default: %(default)d)')
+                    help='output dir (default: %(default)s)')
 ARGS = parser.parse_args()
 
 

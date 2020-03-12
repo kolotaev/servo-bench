@@ -57,7 +57,12 @@ function _M.db()
     local pg = pgmoon.new(dbspec)
     assert(pg:connect())
     local users = {}
-    local qry = "SELECT pg_sleep(" .. random_sleep() .. "), 42"
+    local qry = ""
+    if (SLEEP_MAX + 0) == 0 then
+        qry = "SELECT count(*), 777 FROM pg_catalog.pg_user"
+    else
+        qry = "SELECT pg_sleep(" .. random_sleep() .. "), 42"
+    end
     local res, err = pg:query(qry)
     pg:keepalive()
     pg = nil -- good practice

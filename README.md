@@ -53,19 +53,19 @@
   ![cpu_used](_images/db2/CPU_usage.png)
 
 
-- Postgres DB call that does `sleep count(*)` mimicking random fast queries and random js response
+- Postgres DB call that does `SELECT count(*) FROM pg_catalog.pg_user` mimicking fast queries and random js response
   generated 100 times to simulate post-processing. DB pool size is 400.
   ```bash
   wrk -t12 -c400 -d240s http://vagrant-machine:8080/db --timeout 10s
   ```
 
-  Detailed results can be found [here](./_results/benchmark-results-db-0.100000sec.md).
+  Detailed results can be found [here](./_results/benchmark-results-db-0sec.md).
 
-  ![rps](_images/db01/Requests_per_second.png)
-  ![latency50](_images/db01/Latency_for_50-percentile.png)
-  ![latency99](_images/db01/Latency_for_99-percentile.png)
-  ![mem_used](_images/db01/Memory_usage.png)
-  ![cpu_used](_images/db01/CPU_usage.png)
+  ![rps](_images/db0/Requests_per_second.png)
+  ![latency50](_images/db0/Latency_for_50-percentile.png)
+  ![latency99](_images/db0/Latency_for_99-percentile.png)
+  ![mem_used](_images/db0/Memory_usage.png)
+  ![cpu_used](_images/db0/CPU_usage.png)
 
 ## Frameworks
 

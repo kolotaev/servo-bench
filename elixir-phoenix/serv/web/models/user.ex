@@ -19,8 +19,12 @@ defmodule Serv.User do
   end
 
   def run_heavy_query(n) do
-    sleep = rand_float() * n
-    q = "SELECT pg_sleep(#{sleep})"
+    q = if n == 0 do
+      "SELECT count(*) FROM pg_catalog.pg_user"
+    else
+      sleep = rand_float() * n
+      q = "SELECT pg_sleep(#{sleep})"
+    end
     Ecto.Adapters.SQL.query(Serv.Repo, q)
     q
   end

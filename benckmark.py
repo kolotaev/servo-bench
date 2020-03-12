@@ -39,10 +39,10 @@ CMDS = {
     'cpu-usage': "top -bn1 | awk '/%s/{ SUM += $9 } END { print \"___\"SUM\"___\" }'", # substitute process name
     'wrk': 'wrk -t%d -c%d ' % (THREADS, CONNECTIONS) + '-d%ds http://localhost:8080/%s -s wrk_report.lua --timeout 10s',
     'cd-framework': 'cd /shared/%s',
-    'docker-run': '../mule.sh -rk -s %d -l %d -p %d' % (SQL_SLEEP_MAX, LOOP_COUNT, POOL_SIZE)
+    'docker-run': '../mule.sh -rk -s %f -l %d -p %d' % (SQL_SLEEP_MAX, LOOP_COUNT, POOL_SIZE)
 }
 
-REPORT_FILE_TEMPLATE = '_results/benchmark-results-%s-%dsec.md'
+REPORT_FILE_TEMPLATE = '_results/benchmark-results-%s-%fsec.md'
 
 REPORT_TEMPLATE = """
 ==========================
@@ -228,4 +228,4 @@ if __name__ == '__main__':
     for f, e in suits:
         with vagrant() as ssh:
             run(ssh, f, e)
-            time.sleep(60)
+            time.sleep(120)

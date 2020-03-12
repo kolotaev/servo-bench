@@ -67,7 +67,10 @@ async def json(_):
 
 
 async def db(request):
-    qry = 'SELECT pg_sleep(%f)' % random.uniform(0, SLEEP_MAX)
+    if SLEEP_MAX == 0:
+        qry = "SELECT count(*) FROM pg_catalog.pg_user"
+    else:
+        qry = 'SELECT pg_sleep(%f)' % random.uniform(0, SLEEP_MAX)
     async with request.app['db'].acquire() as conn:
         result = await conn.fetchval(qry)
     users = []

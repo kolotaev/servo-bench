@@ -48,7 +48,10 @@
   (-> SLEEP-MAX (* 1000) rand-int (/ 1000) float))
 
 (defn- select-query []
-  (str "SELECT pg_sleep(" (rand-sleep-number) ")"))
+  (let [rand-sleep (rand-sleep-number)]
+    (if (== 0 rand-sleep)
+      "SELECT count(*) FROM pg_catalog.pg_user"
+      (str "SELECT pg_sleep(" rand-sleep ")"))))
 
 (def db
   {:classname   "org.postgresql.Driver"

@@ -58,8 +58,14 @@
    :friend  (when-not no-friends?
                       (create-user true))})
 
-(defn select-query []
-  (str "SELECT pg_sleep(" (-> SLEEP-MAX (* 1000) rand-int (/ 1000) float) ")"))
+(defn- rand-sleep-number []
+  (-> SLEEP-MAX (* 1000) rand-int (/ 1000) float))
+
+(defn- select-query []
+  (let [rand-sleep (rand-sleep-number)]
+    (if (== 0 rand-sleep)
+      "SELECT count(*) FROM pg_catalog.pg_user"
+      (str "SELECT pg_sleep(" rand-sleep ")"))))
 
 
 ; Endpoints

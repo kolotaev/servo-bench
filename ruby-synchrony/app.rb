@@ -47,7 +47,11 @@ class App < Sinatra::Base
   end
 
   get '/db' do
-    qry = "SELECT pg_sleep(#{Random.rand(SLEEP_MAX)})"
+    qry = if SLEEP_MAX == 0
+      "SELECT count(*) FROM pg_catalog.pg_user"
+    else
+      "SELECT pg_sleep(#{Random.rand(SLEEP_MAX)})"
+    end
     DB.query(qry) do |result|
       users = []
       LOOP_COUNT.times do

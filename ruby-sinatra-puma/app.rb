@@ -52,7 +52,11 @@ class Benchy < Sinatra::Base
   end
 
   get '/db' do
-    qry = "SELECT pg_sleep(#{Random.rand(SLEEP_MAX)})"
+    qry = if SLEEP_MAX == 0
+      "SELECT count(*) FROM pg_catalog.pg_user"
+    else
+      "SELECT pg_sleep(#{Random.rand(SLEEP_MAX)})"
+    end
     st = ActiveRecord::Base.connection.execute(qry)
     users = []
     LOOP_COUNT.times do

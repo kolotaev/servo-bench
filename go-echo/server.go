@@ -113,9 +113,14 @@ func main() {
 		var users []*User
 		result := make(map[string]interface{})
 
-		// Do a long DB I/O call
-		sleepRand := rand.Float64() * sleep
-		queryString := fmt.Sprintf("SELECT pg_sleep(%f)", sleepRand)
+        // Do a long DB I/O call
+        var queryString string
+        if sleep == 0 {
+            queryString = "SELECT count(*) FROM pg_catalog.pg_user"
+        } else {
+            sleepRand := rand.Float64() * sleep
+            queryString = fmt.Sprintf("SELECT pg_sleep(%f)", sleepRand)
+        }
 		rows, err := db.Query(queryString)
 		defer rows.Close()
 		if err != nil {

@@ -90,7 +90,10 @@ def json():
 
 @app.route('/db')
 def db():
-    qry = 'SELECT pg_sleep(%f)' % random.uniform(0, SLEEP_MAX)
+    if SLEEP_MAX == 0:
+        qry = "SELECT count(*) FROM pg_catalog.pg_user"
+    else:
+        qry = 'SELECT pg_sleep(%f)' % random.uniform(0, SLEEP_MAX)
     res = db_execute(sql=qry)
     users = []
     for i in range(LOOP_COUNT):

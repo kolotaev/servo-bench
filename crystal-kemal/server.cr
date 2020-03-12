@@ -61,9 +61,15 @@ get "/json" do
 end
 
 get "/db" do
-  sleep_time = SLEEP_MAX > 0 ? rand(SLEEP_MAX) : 0
-  qry = "SELECT 1, pg_sleep(#{sleep_time})"
-  result, sl = APPDB.query_one qry, as: {Int, Slice(UInt8)}
+  if SLEEP_MAX == 0
+    qry = "SELECT count(*), 777 FROM pg_catalog.pg_user"
+    result, sl = APPDB.query_one qry, as: {Int, Int}
+  else
+    sleep_time = SLEEP_MAX > 0 ? rand(SLEEP_MAX) : 0
+    qry = "SELECT 1, pg_sleep(#{sleep_time})"
+    result, sl = APPDB.query_one qry, as: {Int, Slice(UInt8)}
+  end
+
   users = [] of User
   LOOP_COUNT.times do
     users << create_user

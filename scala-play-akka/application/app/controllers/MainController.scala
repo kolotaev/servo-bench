@@ -29,8 +29,12 @@ class MainController @Inject()(cc: ControllerComponents, repository: PersonRepos
   }
 
   def db() = Action.async { implicit request =>
-    val sleep = Random.nextDouble * sqlMaxSleep
-    val qry = s"SELECT pg_sleep($sleep)"
+    val qry = if (sqlMaxSleep == 0) {
+      "SELECT count(*) FROM pg_catalog.pg_user"
+    } else {
+      val sleep = Random.nextDouble * sqlMaxSleep
+      s"SELECT pg_sleep($sleep)"
+    }
     repository.doQuery(qry) map {
       case _ => {
         // Create some CPU and RAM load
