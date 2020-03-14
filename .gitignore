@@ -92,3 +92,8 @@ thor/
 
 # Jupyter
 test.ipynb
+
+# java gradle
+build/
+.gradle/
+
