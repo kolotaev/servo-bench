@@ -1,6 +1,17 @@
-FROM maven:3.6.1-jdk-11-slim as maven
-WORKDIR /vertx
+# build
+FROM gradle:4.6 as gradle
+
+USER root
+WORKDIR /app
+
+COPY build.gradle build.gradle
 COPY src src
-COPY pom.xml pom.xml
-RUN mvn package -q
-CMD ["java", "-server", "-jar", "target/vertx.benchmark-0.0.1-SNAPSHOT-fat.jar", "src/main/conf/config.json"]
+
+RUN gradle clean shadowJar
+RUN ls -la /app/build/libs/
+
+# prod
+FROM openjdk:11.0.3-jdk-slim
+WORKDIR /app
+COPY --from=gradle /app/build/libs/app-0.1.0-SNAPSHOT-fat.jar app.jar
+CMD ["java", "-server", "-jar", "app.jar", "env=prod"]
