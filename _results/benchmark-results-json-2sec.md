@@ -306,3 +306,26 @@ Results:
 | Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/json -s wrk_report.lua --timeout 10s  |
 | Data read                       | 240.89MB  |
 ==========================
+
+
+==========================
+Date: Fri Mar 20 11:29:25 2020
+Results:
+
+| Param                           | Value |
+| :---                            | :--- |
+| Framework                       | java-vertx |
+| Endpoint                        | /json  |
+| Endpoint sleep sec. (if applicable) | 2  |
+| Requests/sec                    | 5828.84 |
+| Req. Latency (Avg.)             | 66.54ms |
+| Req. Latency (%'le - latency)   | [('50', '0.064'), ('70', '0.068'), ('90', '0.080'), ('99', '0.126'), ('99.9', '0.180'), ('99.999', '0.250')] |
+| 5xx/4xx responses               | 0 |
+| N timeout-ed                    | 0  |
+| Memory used (mean), Mib         | 98 |
+| Memory used samples, Mib        | [98, 98, 98, 98, 98] |
+| CPU used (mean), %              | 91 |
+| CPU used samples, %             | [87.5, 93.8, 93.8, 94.1, 87.5] |
+| Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/json -s wrk_report.lua --timeout 10s  |
+| Data read                       | 493.98MB  |
+==========================

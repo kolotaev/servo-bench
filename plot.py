@@ -1,6 +1,7 @@
 import re
 import argparse
 from operator import itemgetter
+import os
 import os.path
 from functools import partial
 
@@ -52,6 +53,8 @@ def create_chart(data, outdir, name, endpoint='/db', stat_name='reqs', legend='R
     plt.title(name)
     plt.subplots_adjust(left=0.27)
     plt.gca().spines['right'].set_visible(False)
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
     plt.savefig(os.path.join(outdir, name.replace(' ', '_') + '.png'), transparent=False)
     plt.cla()
     plt.clf()
