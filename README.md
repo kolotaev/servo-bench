@@ -19,7 +19,6 @@
     - [Ruby. Synchrony.](#ruby-synchrony)
     - [Ruby. Sinatra. Puma.](#ruby-sinatra-puma)
     - [Lua. Openresty. Nginx.](#lua-openresty-nginx)
-    - [Java. Webery.](#java-webery)
     - [Java. Vertx.](#java-vertx)
   - [Mule script](#mule-script)
 
@@ -173,12 +172,6 @@ With async PG driver.
 - [Luajit](https://luajit.org)
 - [Openresty](https://openresty.org/)
 - [Nginx](http://nginx.org)
-
-### Java. Webery.
-
-- [Webery](github.com/wizzardo/webery)
-
-For DB uses custom async vert.x postgres driver
 
 
 ### Java. Vertx.
