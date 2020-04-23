@@ -15,7 +15,9 @@ import models._
 @Singleton
 class PersonRepository @Inject()(db: Database) {
 
-  implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(250))
+  implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(
+    Executors.newFixedThreadPool(Properties.envOrElse("POOL_SIZE", "1").toInt)
+  )
 
   val personParser = float("pg_sleep") map {
     case _ => true
