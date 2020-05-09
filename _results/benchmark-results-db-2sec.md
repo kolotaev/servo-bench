@@ -286,7 +286,7 @@ Results:
 
 
 ==========================
-Date: Fri Mar 20 20:45:33 2020
+Date: Sat May  9 22:53:11 2020
 Results:
 
 | Param                           | Value |
@@ -294,15 +294,15 @@ Results:
 | Framework                       | java-vertx |
 | Endpoint                        | /db  |
 | Endpoint sleep sec. (if applicable) | 2.0  |
-| Requests/sec                    | 8.52 |
-| Req. Latency (Avg.)             | 7.88s |
-| Req. Latency (%'le - latency)   | [('50', '7.832'), ('70', '8.786'), ('90', '9.596'), ('99', '9.968'), ('99.9', '9.968'), ('99.999', '9.968')] |
+| Requests/sec                    | 232.75 |
+| Req. Latency (Avg.)             | 1.01s |
+| Req. Latency (%'le - latency)   | [('50', '1.009'), ('70', '1.409'), ('90', '1.808'), ('99', '1.994'), ('99.9', '2.053'), ('99.999', '2.262')] |
 | 5xx/4xx responses               | 0 |
-| N timeout-ed                    | 1977  |
-| Memory used (mean), Mib         | 106 |
-| Memory used samples, Mib        | [105, 105, 107, 107, 107] |
-| CPU used (mean), %              | 1 |
-| CPU used samples, %             | [0.0, 0.0, 6.7, 0.0, 0.0] |
+| N timeout-ed                    | 0  |
+| Memory used (mean), Mib         | 117 |
+| Memory used samples, Mib        | [117, 117, 117, 117, 117] |
+| CPU used (mean), %              | 48 |
+| CPU used samples, %             | [52.6, 58.8, 44.4, 44.4, 42.1] |
 | Test command                    | wrk -t12 -c400 -d240s http://localhost:8080/db -s wrk_report.lua --timeout 10s  |
-| Data read                       | 58.63MB  |
+| Data read                       | 1.57GB  |
 ==========================
