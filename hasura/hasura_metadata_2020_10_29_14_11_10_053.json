@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "tables": [
+    {
+      "table": {
+        "schema": "public",
+        "name": "foo"
+      }
+    },
+    {
+      "table": {
+        "schema": "public",
+        "name": "users_foo"
+      }
+    }
+  ],
+  "functions": [
+    {
+      "function": {
+        "schema": "public",
+        "name": "get_random_sleep2"
+      }
+    },
+    {
+      "function": {
+        "schema": "public",
+        "name": "get_users2"
+      }
+    },
+    {
+      "function": {
+        "schema": "public",
+        "name": "get_users3"
+      }
+    }
+  ]
+}
