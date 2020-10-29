@@ -20,6 +20,7 @@
     - [Ruby. Sinatra. Puma.](#ruby-sinatra-puma)
     - [Lua. Openresty. Nginx.](#lua-openresty-nginx)
     - [Java. Vertx.](#java-vertx)
+    - [Haskell. Hasura.](#haskell-hasura)
   - [Mule script](#mule-script)
 
 
@@ -180,6 +181,13 @@ With async PG driver.
 
 For DB we use async vert.x postgres driver
 
+
+### Haskell. Hasura.
+
+- [Hasura](https://hasura.io)
+
+Doesn't currently participate in the race, but you can see the results in its directory.
+It's quite promising.
 
 ## Mule script
 
