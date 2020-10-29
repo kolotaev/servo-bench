@@ -53,7 +53,8 @@ Requests/sec:   1191.02
 Transfer/sec:    295.43KB
 ```
 
-Memory teken: 142.7 MiB	graphql-engine
+Memory taken: 142.7 MiB	graphql-engine
+
 CPU taken: ~ 70 - 80 %
 
 
@@ -78,6 +79,7 @@ Requests/sec:    234.17
 Transfer/sec:     59.00KB
 ```
 
-Memory teken: 160.7 MiB	graphql-engine
+Memory taken: 160.7 MiB	graphql-engine
               386.5 MiB	postgres (248)
+
 CPU taken: ~ 15 - 25 %
