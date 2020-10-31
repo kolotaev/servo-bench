@@ -27,6 +27,12 @@
          genned (take n (repeatedly #(rand-nth chars)))]
      (reduce str genned))))
 
+; A better and quicker rand-string. Mind lazy-seq!
+; (def possible-chars (vec (map char (range 65 90))))
+; (defn- rand-string [n]
+;   (apply str (repeatedly n #(rand-nth possible-chars))))
+
+
 (defn- create-user
   [& [no-friends?]]
   {:name    (rand-string 10)
@@ -44,6 +50,9 @@
   (let [users (atom ())]
     (dotimes [_ LOOP-COUNT] (swap! users conj (create-user)))
     @users))
+
+(defn- generate-users-with-repeat []
+	(repeatedly LOOP-COUNT create-user))
 
 (defn- rand-sleep-number []
   (-> SLEEP-MAX (* 1000) rand-int (/ 1000) float))
@@ -64,16 +73,18 @@
 ; Executors
 
 (defn execute-db-workload [ch]
+  "This one is experimental"
   (let [q (select-query)]
     (adb/execute! db [q]
       (fn [res err]
         (send! ch (json/encode {:users (generate-users) :query q :result res}))))))
 
 (defn execute-remote-call [ch]
-  (let [q (str "http://127.0.0.1:8081/pg/" (rand-sleep-number))]
-    (http/get q
-      (fn [{:keys [status headers body error]}]
-        (send! ch (json/encode {:users (generate-users) :query q :result body :status status}))))))
+  (http/get "http://127.0.0.1:8081/db" {:keepalive -1}
+     (fn [{:keys [status headers body error]}]
+        (send! ch {:status 200
+                   :headers {"Content-Type" "application/json"}
+                   :body    (json/encode (generate-users))}))))
 
 
 ; Endpoints
@@ -108,6 +119,6 @@
 (defn -main []
   (println (str "Running. SQL_SLEEP_MAX = " SLEEP-MAX " seconds; LOOP_COUNT = " LOOP-COUNT "; pool = " POOL-SIZE))
   (run-server main-routes {:port 8080
-                          ;  :queue-size 50000
-                          ;  :thread 4
+                           ; :queue-size 50000
+                           ; :thread 4
                           }))
