@@ -2,7 +2,7 @@
 
 > Tests for minimal machines with limited resources (1 vCPU, 1 Gb RAM).
 
-_Note that all tests are performed on a dedicated vCPU. Results may vary for cheap VPS plans that use shared CPU resoirces_
+_Note that all tests are performed on a dedicated vCPU. Results may (and will) vary for basic VPS plans that use shared CPU resources._
 
 - [Benchmark of various web-frameworks](#benchmark-of-various-web-frameworks)
   - [Tests](#tests)
