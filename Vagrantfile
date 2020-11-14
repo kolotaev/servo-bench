@@ -13,6 +13,7 @@ Vagrant.configure("2") do |config|
     v.cpus = 1
     v.customize ["modifyvm", :id, "--ioapic", "on"]
     # v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    # v.customize ["modifyvm", :id, "--cpuexecutioncap", "10"]
   end
 
   config.vm.provision "shell", path: "provision.sh", privileged: true
