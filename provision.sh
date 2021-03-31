@@ -24,7 +24,7 @@ apt-get install postgresql-9.6 postgresql-client-9.6 -y
 # Configure Postgres
 sudo -u postgres psql -c "ALTER USER \"postgres\" WITH PASSWORD 'root';"
 mkdir -p /etc/postgresql/9.6/main/conf.d
-cp /shared/postgres_custom.conf /etc/postgresql/9.6/main/conf.d/00postgres_custom.conf
+cp ./postgres_custom.conf /etc/postgresql/9.6/main/conf.d/00postgres_custom.conf
 echo "include_dir 'conf.d'" >> /etc/postgresql/9.6/main/postgresql.conf
 echo "host    all             all              0.0.0.0/0                       md5" >> /etc/postgresql/9.6/main/pg_hba.conf
 echo "host    all             all              ::/0                            md5" >> /etc/postgresql/9.6/main/pg_hba.conf
