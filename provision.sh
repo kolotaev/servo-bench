@@ -2,13 +2,13 @@
 
 # Update sources
 apt-get update
+apt-get -y upgrade
 
 # Install curl
 apt-get install curl software-properties-common -y
 
 # Install python3
 apt-get install python3 -y
-
 # Install pip for python2
 curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
 python get-pip.py
@@ -17,18 +17,25 @@ python get-pip.py
 # Install memory monioring utility
 python -m pip install ps_mem
 
-# Install Postgres 9.6
-apt-get install postgresql-9.6 postgresql-client-9.6 -y
 
-
+# Install Postgres
+PG_VERSION=13
+apt-get -y install wget gnupg2
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list
+cat /etc/apt/sources.list.d/pgdg.list
+apt-get update
+apt-get -y install postgresql-$PG_VERSION postgresql-client-$PG_VERSION
 # Configure Postgres
 sudo -u postgres psql -c "ALTER USER \"postgres\" WITH PASSWORD 'root';"
-mkdir -p /etc/postgresql/9.6/main/conf.d
-cp ./postgres_custom.conf /etc/postgresql/9.6/main/conf.d/00postgres_custom.conf
-echo "include_dir 'conf.d'" >> /etc/postgresql/9.6/main/postgresql.conf
-echo "host    all             all              0.0.0.0/0                       md5" >> /etc/postgresql/9.6/main/pg_hba.conf
-echo "host    all             all              ::/0                            md5" >> /etc/postgresql/9.6/main/pg_hba.conf
-
+mkdir -p /etc/postgresql/$PG_VERSION/main/conf.d
+cp ./postgres_custom.conf /etc/postgresql/$PG_VERSION/main/conf.d/00postgres_custom.conf
+echo "include_dir 'conf.d'" >> /etc/postgresql/$PG_VERSION/main/postgresql.conf
+echo "host    all             all              0.0.0.0/0                       md5" >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf
+echo "host    all             all              ::/0                            md5" >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf
+# Restarting Postgres
+# service postgresql restart
+pg_ctlcluster $PG_VERSION main start
 
 # Install Docker
 if [ -x "$(command -v docker)" ]; then
@@ -72,7 +79,3 @@ sysctl -w kernel.shmmax=134217728
 sysctl -w kernel.shmall=2097152
 echo "kernel.shmmax=134217728" >> /etc/sysctl.conf
 echo "kernel.shmall=2097152" >> /etc/sysctl.conf
-
-
-# Restarting services
-service postgresql restart
