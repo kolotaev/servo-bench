@@ -34,8 +34,8 @@ echo "include_dir 'conf.d'" >> /etc/postgresql/$PG_VERSION/main/postgresql.conf
 echo "host    all             all              0.0.0.0/0                       md5" >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf
 echo "host    all             all              ::/0                            md5" >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf
 # Restarting Postgres
+pg_ctlcluster $PG_VERSION main resatrt
 # service postgresql restart
-pg_ctlcluster $PG_VERSION main start
 
 # Install Docker
 if [ -x "$(command -v docker)" ]; then
