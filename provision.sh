@@ -8,34 +8,30 @@ apt-get -y upgrade
 apt-get install curl software-properties-common -y
 
 # Install python3
-apt-get install python3 -y
-# Install pip for python2
-curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
-python get-pip.py
-
+apt-get install python3 python3-pip -y
 
 # Install memory monioring utility
-python -m pip install ps_mem
+pip3 install ps_mem
 
 
 # Install Postgres
 PG_VERSION=13
 apt-get -y install wget gnupg2
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list
+echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | sudo tee  /etc/apt/sources.list.d/pgdg.list
 cat /etc/apt/sources.list.d/pgdg.list
 apt-get update
 apt-get -y install postgresql-$PG_VERSION postgresql-client-$PG_VERSION
 # Configure Postgres
 sudo -u postgres psql -c "ALTER USER \"postgres\" WITH PASSWORD 'root';"
 mkdir -p /etc/postgresql/$PG_VERSION/main/conf.d
-cp ./postgres_custom.conf /etc/postgresql/$PG_VERSION/main/conf.d/00postgres_custom.conf
+cp /shared/postgres_custom.conf /etc/postgresql/$PG_VERSION/main/conf.d/00postgres_custom.conf
 echo "include_dir 'conf.d'" >> /etc/postgresql/$PG_VERSION/main/postgresql.conf
 echo "host    all             all              0.0.0.0/0                       md5" >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf
 echo "host    all             all              ::/0                            md5" >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf
 # Restarting Postgres
-pg_ctlcluster $PG_VERSION main resatrt
-# service postgresql restart
+pg_ctlcluster $PG_VERSION main restart
+systemctl restart postgresql
 
 # Install Docker
 if [ -x "$(command -v docker)" ]; then
