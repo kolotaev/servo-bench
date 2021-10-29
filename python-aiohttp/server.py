@@ -1,4 +1,3 @@
-import asyncio
 import json as JSON
 import os
 import random
@@ -74,7 +73,7 @@ async def db(request):
     async with request.app['db'].acquire() as conn:
         result = await conn.fetchval(qry)
     users = []
-    for i in range(LOOP_COUNT):
+    for _ in range(LOOP_COUNT):
         user = create_user()
         users.append(user)
     return web.Response(
@@ -83,7 +82,7 @@ async def db(request):
 
 
 if __name__ == '__main__':
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    uvloop.install()
     web_app = web.Application()
     web_app.on_startup.append(startup)
     web_app.on_cleanup.append(cleanup)
