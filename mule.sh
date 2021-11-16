@@ -8,7 +8,7 @@ ATTACHED=false
 SQL_SLEEP_MAX=2 # seconds
 LOOP_COUNT=100
 POOL_SIZE=400
-TARGET_URL="http://127.0.0.1:9000/ping"
+TARGET_URL="http://127.0.0.1:9000/sleep"
 
 
 # Functions
@@ -77,7 +77,7 @@ function build_all_images() {
     then
         echo "You must be in repo's root dir: ${root_test}"
         echo "current dir is ${root}"
-        exit
+        exit 1
     fi
     image_dirs=$(find . -type f -name 'processname.txt' | sed -r 's|/[^/]+$||' | sort | uniq)
     for f in $image_dirs; do
@@ -98,10 +98,10 @@ This script runs docker container for specific framework.
 OPTIONS:
    -x      Build docker images for all frameworks (useful for a newly deployed machine)
    -d      Directory name of the framework service (if not specified, defaults to the current directory)
-   -r      Run container? (default: false)
-   -b      Build image? (default: false)
-   -k      Kill the previously run container? (default: false)
-   -a      Attach container's TTY? (default: false)
+   -r      Run container? (default: $DO_RUN)
+   -b      Build image? (default: $DO_BUILD)
+   -k      Kill the previously run container? (default: $DO_KILL)
+   -a      Attach container's TTY? (default: $ATTACHED)
    -l      Max loop count for service load. Docker container env variable LOOP_COUNT (default: $LOOP_COUNT)
    -s      Max sleep seconds for DB call. Docker container env variable SQL_SLEEP_MAX (default: $SQL_SLEEP_MAX)
    -p      Postgres pool size (min & max). Docker container env variable POOL_SIZE (default: $POOL_SIZE)
