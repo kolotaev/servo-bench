@@ -191,6 +191,16 @@ For DB we use async vert.x postgres driver
 Doesn't currently participate in the race, but you can see the results in its directory.
 It's quite promising.
 
+
+## Sleep Echo server
+
+In order to test remote HTTP requests performance we spin up a simple Golang echo-server that sleeps for a specified amount of time before responding back.
+
+Build and run it with a standard `mule` script command prior to tests.
+
+Its single endpoint is: `http://127.0.0.1:9000/sleep/${sleep_second_you_want}`
+
+
 ## Mule script
 
 `mule` is a script to help you build and run specific framework in a docker-container.
