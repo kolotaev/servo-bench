@@ -8,6 +8,7 @@ ATTACHED=false
 SQL_SLEEP_MAX=2 # seconds
 LOOP_COUNT=100
 POOL_SIZE=400
+TARGET_URL="http://127.0.0.1:9000/ping"
 
 
 # Functions
@@ -58,7 +59,7 @@ function launch_container() {
             CMD="${CMD} -d "
         fi
 
-        CMD="${CMD} -e SQL_SLEEP_MAX=${SQL_SLEEP_MAX} -e LOOP_COUNT=${LOOP_COUNT} -e POOL_SIZE=${POOL_SIZE}"
+        CMD="${CMD} -e SQL_SLEEP_MAX=${SQL_SLEEP_MAX} -e LOOP_COUNT=${LOOP_COUNT} -e POOL_SIZE=${POOL_SIZE} -e TARGET_URL=${TARGET_URL}"
         CMD="${CMD} --net=host $IMAGE"
 
         echo "++ Launching container..."
@@ -101,9 +102,10 @@ OPTIONS:
    -b      Build image? (default: false)
    -k      Kill the previously run container? (default: false)
    -a      Attach container's TTY? (default: false)
-   -l      Max loop count for service load. Docker container env variable LOOP_COUNT (default: 100)
-   -s      Max sleep seconds for DB call. Docker container env variable SQL_SLEEP_MAX (default: 2)
-   -p      Postgres pool size (min & max). Docker container env variable POOL_SIZE (default: 400)
+   -l      Max loop count for service load. Docker container env variable LOOP_COUNT (default: $LOOP_COUNT)
+   -s      Max sleep seconds for DB call. Docker container env variable SQL_SLEEP_MAX (default: $SQL_SLEEP_MAX)
+   -p      Postgres pool size (min & max). Docker container env variable POOL_SIZE (default: $POOL_SIZE)
+   -u      URL to make http requests to (default: $TARGET_URL)
    -h      Show script usage
 -------------------------------------------
 EOF
@@ -111,7 +113,7 @@ EOF
 
 
 # Running Main!
-while getopts d:p:l:s:ahkbrx option
+while getopts d:p:u:l:s:ahkbrx option
 do
     case "${option}"
     in
@@ -123,6 +125,7 @@ do
     l) LOOP_COUNT=${OPTARG};;
     s) SQL_SLEEP_MAX=${OPTARG};;
     p) POOL_SIZE=${OPTARG};;
+    u) TARGET_URL=${OPTARG};;
     x) build_all_images; exit;;
     h) show_usage; exit;;
     \?) show_usage; exit;;
