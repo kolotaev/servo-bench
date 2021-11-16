@@ -3,10 +3,10 @@ import os
 import random
 import string
 
+import aiohttp
 from aiohttp import web
 import uvloop
 import asyncpg
-import httpx
 
 
 HOST = '0.0.0.0'
@@ -14,7 +14,7 @@ PORT = 8080
 SLEEP_MAX = float(os.environ.get('SQL_SLEEP_MAX', 0.0))
 LOOP_COUNT = int(os.environ.get('LOOP_COUNT', 0))
 POOL_SIZE = int(os.environ.get('POOL_SIZE', 1))
-TARGET_URL = os.environ.get('TARGET_URL')
+TARGET_URL = os.environ.get('TARGET_URL', '').strip('/')
 DSN = 'postgres://postgres:root@127.0.0.1:5432/postgres'
 
 
@@ -70,9 +70,11 @@ async def json(_):
 
 
 async def http(_):
-    async with httpx.AsyncClient() as client:
-        response = await client.get(TARGET_URL)
-        return response
+    target_url = '%s/%f' % (TARGET_URL, random.uniform(0, SLEEP_MAX))
+    async with aiohttp.ClientSession() as session:
+        async with session.get(target_url) as response:
+            body = await response.text()
+            return web.Response(text=body, content_type='application/json')
 
 
 async def db(request):
