@@ -1,3 +1,4 @@
 aiohttp == 3.7.4
 asyncpg == 0.24.0
 uvloop == 0.16.0
+httpx >= 0.21.*

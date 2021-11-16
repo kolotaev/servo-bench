@@ -6,6 +6,7 @@ import string
 from aiohttp import web
 import uvloop
 import asyncpg
+import httpx
 
 
 HOST = '0.0.0.0'
@@ -13,6 +14,7 @@ PORT = 8080
 SLEEP_MAX = float(os.environ.get('SQL_SLEEP_MAX', 0.0))
 LOOP_COUNT = int(os.environ.get('LOOP_COUNT', 0))
 POOL_SIZE = int(os.environ.get('POOL_SIZE', 1))
+TARGET_URL = os.environ.get('TARGET_URL')
 DSN = 'postgres://postgres:root@127.0.0.1:5432/postgres'
 
 
@@ -60,9 +62,17 @@ async def cleanup(app):
     await app['db'].close()
 
 
+# Routes:
+
 async def json(_):
     user = create_user()
     return web.Response(text=jsonify(user), content_type='application/json')
+
+
+async def http(_):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(TARGET_URL)
+        return response
 
 
 async def db(request):
@@ -88,4 +98,5 @@ if __name__ == '__main__':
     web_app.on_cleanup.append(cleanup)
     web_app.router.add_route('GET', '/json', json)
     web_app.router.add_route('GET', '/db', db)
+    web_app.router.add_route('GET', '/http', http)
     web.run_app(web_app, port=PORT, access_log=None)
