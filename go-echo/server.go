@@ -9,6 +9,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"io/ioutil"
+	"strings"
 
 	"github.com/labstack/echo"
 	_ "github.com/lib/pq"
@@ -68,7 +70,7 @@ func createUser() *User {
 	}
 }
 
-func getBenchmarkParams() (float64, int) {
+func getBenchmarkParams() (float64, int, string) {
 	sleep := SLEEP_MAX_DEFAULT
 	loopCount := LOOP_COUNT_DEFAULT
 
@@ -81,13 +83,17 @@ func getBenchmarkParams() (float64, int) {
 	if err == nil {
 		loopCount = i
 	}
-	return sleep, loopCount
+	return sleep, loopCount, strings.TrimSuffix(os.Getenv("TARGET_URL"), "/")
+}
+
+func randSleep(max float64) float64 {
+	return rand.Float64() * max
 }
 
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	sleep, loopCount := getBenchmarkParams()
+	sleep, loopCount, targetURL := getBenchmarkParams()
 	log.Printf("Using SQL_SLEEP_MAX = %f seconds; LOOP_COUNT = %d\n", sleep, loopCount)
 
 	// Connect to DB
@@ -109,6 +115,21 @@ func main() {
 		return c.JSON(http.StatusOK, &user)
 	})
 
+	e.GET("/http", func(c echo.Context) error {
+		resp, err := http.Get(fmt.Sprintf("%s/%s", targetURL, randSleep(sleep)))
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+		}
+		defer resp.Body.Close()
+	
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+		}
+	
+		return c.String(http.StatusOK, string(body))
+	})
+
 	e.GET("/db", func(c echo.Context) error {
 		var users []*User
 		result := make(map[string]interface{})
@@ -118,14 +139,13 @@ func main() {
         if sleep == 0 {
             queryString = "SELECT count(*) FROM pg_catalog.pg_user"
         } else {
-            sleepRand := rand.Float64() * sleep
-            queryString = fmt.Sprintf("SELECT pg_sleep(%f)", sleepRand)
+            queryString = fmt.Sprintf("SELECT pg_sleep(%f)", randSleep(sleep))
         }
 		rows, err := db.Query(queryString)
-		defer rows.Close()
 		if err != nil {
-			log.Fatal(err)
+			c.String(http.StatusInternalServerError, err.Error())
 		}
+		defer rows.Close()
 		result["db-query"] = queryString
 
 		// Create some CPU and RAM load
