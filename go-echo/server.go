@@ -12,7 +12,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
 )
 
@@ -116,15 +116,15 @@ func main() {
 	})
 
 	e.GET("/http", func(c echo.Context) error {
-		resp, err := http.Get(fmt.Sprintf("%s/%s", targetURL, randSleep(sleep)))
+		resp, err := http.Get(fmt.Sprintf("%s/%f", targetURL, randSleep(sleep)))
 		if err != nil {
-			c.String(http.StatusInternalServerError, err.Error())
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 		defer resp.Body.Close()
 	
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			c.String(http.StatusInternalServerError, err.Error())
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
 	
 		return c.String(http.StatusOK, string(body))

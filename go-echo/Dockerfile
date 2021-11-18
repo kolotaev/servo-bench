@@ -1,15 +1,13 @@
 # Go Echo framework
 
-FROM golang:1.13-alpine
+FROM golang:1.15-alpine
 
+WORKDIR /server
 RUN apk add --no-cache git
 
-RUN go get -u github.com/labstack/echo/... && go get github.com/lib/pq/...
-
 ADD . .
-
+RUN go mod vendor
 RUN go build server.go && mv server goecho
 
 ENTRYPOINT ./runner.sh
-
 EXPOSE 8080
