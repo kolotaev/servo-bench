@@ -2,14 +2,15 @@
 
 const express = require('express');
 const { Pool } = require('pg');
+const axios = require('axios');
 
 const PORT = 8080;
 const HOST = '0.0.0.0';
 
-
 const sqlMaxSleep = parseFloat(process.env.SQL_SLEEP_MAX) || 0.0; // seconds
 const loopCount = parseInt(process.env.LOOP_COUNT) || 0;
 const poolSize = parseInt(process.env.POOL_SIZE) || 1;
+const targetUrl = process.env.TARGET_URL.replace(/\/$/, '');
 
 
 function randomString(len) {
@@ -46,6 +47,10 @@ function createUser() {
     };
 }
 
+function randSleep() {
+    return Math.random() * sqlMaxSleep;
+}
+
 // App
 const app = express();
 
@@ -72,14 +77,19 @@ app.get('/json', (req, res) => {
     res.json(user);
 });
 
+app.get('/http', (req, res) => {
+    axios.get(`${targetUrl}/${randSleep()}`)
+    .then(result => res.json(result.data))
+    .catch(err => res.status(500).json(err));
+});
+
 app.get('/db', (req, res) => {
     // Make a DB call
     var qry = "";
     if (sqlMaxSleep == 0) {
       qry = "SELECT count(*) FROM pg_catalog.pg_user"
     } else {
-      var randSleep = Math.random() * sqlMaxSleep;
-      qry = `SELECT pg_sleep(${randSleep})`;
+      qry = `SELECT pg_sleep(${randSleep()})`;
     }
     pool.query(qry, (err, result) => {
         if (err) {

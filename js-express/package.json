@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "express": "^4.16.1",
-    "pg": "^7"
+    "pg": "^7",
+    "axios": "*"
   }
 }
