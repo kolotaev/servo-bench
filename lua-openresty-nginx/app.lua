@@ -1,11 +1,12 @@
 local ngx = ngx
-local ngx_print = ngx.print
-local json = require "cjson"
+local json = require("cjson")
 local pgmoon = require("pgmoon")
+local http = require("resty.http")
 
 
 local SLEEP_MAX = os.getenv("SQL_SLEEP_MAX")
 local LOOP_COUNT = os.getenv("LOOP_COUNT")
+local TARGET_URL = os.getenv("TARGET_URL")
 
 local dbspec = {
     host = "127.0.0.1",
@@ -50,7 +51,18 @@ local _M = {}
 
 function _M.json()
     local user = create_user(true)
-    ngx_print(json.encode(user))
+    ngx.print(json.encode(user))
+end
+
+function _M.http()
+    uri = TARGET_URL .. "/" .. random_sleep()
+    local client = http.new()
+    local res, err = client:request_uri(uri, { method = "GET" })
+    if err then
+        ngx.status = 500
+        return ngx.exit(500)
+    end
+    ngx.print(res.body)
 end
 
 function _M.db()
@@ -66,11 +78,16 @@ function _M.db()
     local res, err = pg:query(qry)
     pg:keepalive()
     pg = nil -- good practice
+    
+    if err then
+        ngx.status = 500
+        return ngx.exit(500)
+    end
 
     for i = 0, LOOP_COUNT, 1 do
         users[i] = create_user(true)
     end
-    ngx_print(json.encode({
+    ngx.print(json.encode({
         err = err,
         res = res,
         users = users,
